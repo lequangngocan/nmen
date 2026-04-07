@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Order History | NMen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Work+Sans:wght@300;400;500;600&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#c6c6c6",
+                    "on-background": "#1a1c1c",
+                    "background": "#f9f9f9",
+                    "primary-fixed-dim": "#474747",
+                    "secondary": "#5e5e5e",
+                    "on-error-container": "#410002",
+                    "on-secondary-fixed-variant": "#3b3b3c",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#474747",
+                    "surface-bright": "#f9f9f9",
+                    "surface-container-low": "#f3f3f3",
+                    "primary": "#000000",
+                    "on-tertiary": "#e2e2e2",
+                    "tertiary-container": "#747474",
+                    "surface": "#f9f9f9",
+                    "primary-fixed": "#5e5e5e",
+                    "outline": "#777777",
+                    "primary-container": "#3b3b3b",
+                    "on-tertiary-container": "#ffffff",
+                    "surface-tint": "#5e5e5e",
+                    "inverse-surface": "#2f3131",
+                    "surface-dim": "#dadada",
+                    "on-tertiary-fixed-variant": "#e2e2e2",
+                    "on-error": "#ffffff",
+                    "tertiary": "#3b3b3b",
+                    "on-surface": "#1a1c1c",
+                    "surface-container-high": "#e8e8e8",
+                    "error-container": "#ffdad6",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed": "#1b1c1c",
+                    "tertiary-fixed": "#5e5e5e",
+                    "tertiary-fixed-dim": "#474747",
+                    "on-tertiary-fixed": "#ffffff",
+                    "on-primary-container": "#ffffff",
+                    "inverse-on-surface": "#f1f1f1",
+                    "on-primary": "#e2e2e2",
+                    "secondary-container": "#d5d4d4",
+                    "inverse-primary": "#c6c6c6",
+                    "surface-container": "#eeeeee",
+                    "on-primary-fixed": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#e2e2e2",
+                    "surface-variant": "#e2e2e2",
+                    "surface-container-highest": "#e2e2e2",
+                    "secondary-fixed-dim": "#acabab",
+                    "secondary-fixed": "#c7c6c6",
+                    "on-secondary-container": "#1b1c1c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0px",
+                    "lg": "0px",
+                    "xl": "0px",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Work Sans"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #f9f9f9; }
+        ::-webkit-scrollbar-thumb { background: #000000; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased">
+<!-- TopNavBar - Shared Component -->
+<nav class="fixed top-0 w-full z-50 bg-stone-50/85 backdrop-blur-md flex justify-between items-center px-12 py-6 w-full">
+<div class="text-3xl font-black tracking-tighter text-black uppercase cursor-pointer transition-all active:scale-95">NMen</div>
+<div class="hidden md:flex gap-10">
+<a class="font-['Manrope'] font-bold tracking-tighter uppercase text-sm text-stone-500 hover:text-black transition-colors cursor-pointer transition-all active:scale-95" href="#">Home</a>
+<a class="font-['Manrope'] font-bold tracking-tighter uppercase text-sm text-stone-500 hover:text-black transition-colors cursor-pointer transition-all active:scale-95" href="#">New Arrivals</a>
+<a class="font-['Manrope'] font-bold tracking-tighter uppercase text-sm text-stone-500 hover:text-black transition-colors cursor-pointer transition-all active:scale-95" href="#">Clothing</a>
+<a class="font-['Manrope'] font-bold tracking-tighter uppercase text-sm text-stone-500 hover:text-black transition-colors cursor-pointer transition-all active:scale-95" href="#">Accessories</a>
+<a class="font-['Manrope'] font-bold tracking-tighter uppercase text-sm text-stone-500 hover:text-black transition-colors cursor-pointer transition-all active:scale-95" href="#">Sale</a>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-black cursor-pointer hover:opacity-70 transition-opacity">search</span>
+<span class="material-symbols-outlined text-black cursor-pointer hover:opacity-70 transition-opacity" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="material-symbols-outlined text-black cursor-pointer hover:opacity-70 transition-opacity">favorite</span>
+<span class="material-symbols-outlined text-black cursor-pointer hover:opacity-70 transition-opacity">shopping_bag</span>
+</div>
+</nav>
+<main class="pt-32 pb-24 px-12 min-h-screen">
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12">
+<!-- Sidebar Navigation -->
+<aside class="md:col-span-3 lg:col-span-2">
+<div class="sticky top-40 space-y-8">
+<h2 class="font-headline text-xs font-black tracking-widest uppercase text-stone-400">My Account</h2>
+<nav class="flex flex-col gap-4">
+<a class="flex items-center gap-3 font-label text-sm font-medium text-secondary hover:text-primary transition-colors py-2 group" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span>
+                            Home
+                        </a>
+<a class="flex items-center gap-3 font-label text-sm font-medium text-secondary hover:text-primary transition-colors py-2 group" href="#">
+<span class="material-symbols-outlined text-[20px]">person</span>
+                            Profile
+                        </a>
+<a class="flex items-center gap-3 font-label text-sm font-bold text-primary py-2 border-r-2 border-primary" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+                            Order History
+                        </a>
+<a class="flex items-center gap-3 font-label text-sm font-medium text-secondary hover:text-primary transition-colors py-2 group" href="#">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+                            Wishlist
+                        </a>
+</nav>
+<div class="pt-12">
+<div class="p-6 bg-surface-container-low border-l-4 border-primary">
+<p class="font-headline text-[10px] font-bold uppercase tracking-[0.2em] mb-2">Member Perk</p>
+<p class="font-body text-xs leading-relaxed text-secondary">Enjoy complimentary shipping on all orders over $250.</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<section class="md:col-span-9 lg:col-span-10">
+<header class="mb-16">
+<h1 class="font-headline text-5xl font-black tracking-tighter uppercase mb-4">Order History</h1>
+<p class="font-body text-secondary max-w-xl">Track your recent purchases, download invoices, and manage returns from your digital closet vault.</p>
+</header>
+<!-- Order List / Table -->
+<div class="space-y-6">
+<!-- Table Header -->
+<div class="hidden md:grid grid-cols-12 gap-4 px-6 pb-4 border-b border-outline-variant/30">
+<div class="col-span-2 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400">Order ID</div>
+<div class="col-span-3 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400">Date</div>
+<div class="col-span-3 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400">Status</div>
+<div class="col-span-2 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400 text-right">Total</div>
+<div class="col-span-2"></div>
+</div>
+<!-- Order Item 1 -->
+<div class="grid grid-cols-1 md:grid-cols-12 items-center gap-4 p-6 bg-surface-container-lowest hover:bg-surface-container-low transition-colors group">
+<div class="col-span-2 font-label text-sm font-bold">#NM-49201</div>
+<div class="col-span-3 font-body text-sm text-secondary">October 24, 2024</div>
+<div class="col-span-3">
+<span class="inline-flex items-center gap-2 px-3 py-1 bg-black text-white text-[10px] font-bold uppercase tracking-widest">In Transit</span>
+</div>
+<div class="col-span-2 font-label text-sm font-bold text-right">$1,240.00</div>
+<div class="col-span-2 flex justify-end gap-4">
+<button class="font-headline text-[10px] font-bold uppercase tracking-widest border-b border-transparent hover:border-primary transition-all">Details</button>
+</div>
+</div>
+<!-- Order Item 2 -->
+<div class="grid grid-cols-1 md:grid-cols-12 items-center gap-4 p-6 bg-surface-container-lowest hover:bg-surface-container-low transition-colors group">
+<div class="col-span-2 font-label text-sm font-bold">#NM-48592</div>
+<div class="col-span-3 font-body text-sm text-secondary">September 12, 2024</div>
+<div class="col-span-3">
+<span class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container text-primary text-[10px] font-bold uppercase tracking-widest">Delivered</span>
+</div>
+<div class="col-span-2 font-label text-sm font-bold text-right">$450.00</div>
+<div class="col-span-2 flex justify-end gap-4">
+<button class="font-headline text-[10px] font-bold uppercase tracking-widest border-b border-transparent hover:border-primary transition-all">Details</button>
+</div>
+</div>
+<!-- Order Item 3 -->
+<div class="grid grid-cols-1 md:grid-cols-12 items-center gap-4 p-6 bg-surface-container-lowest hover:bg-surface-container-low transition-colors group">
+<div class="col-span-2 font-label text-sm font-bold">#NM-47110</div>
+<div class="col-span-3 font-body text-sm text-secondary">August 05, 2024</div>
+<div class="col-span-3">
+<span class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container text-primary text-[10px] font-bold uppercase tracking-widest">Delivered</span>
+</div>
+<div class="col-span-2 font-label text-sm font-bold text-right">$2,890.00</div>
+<div class="col-span-2 flex justify-end gap-4">
+<button class="font-headline text-[10px] font-bold uppercase tracking-widest border-b border-transparent hover:border-primary transition-all">Details</button>
+</div>
+</div>
+<!-- Order Item 4 -->
+<div class="grid grid-cols-1 md:grid-cols-12 items-center gap-4 p-6 bg-surface-container-lowest hover:bg-surface-container-low transition-colors group">
+<div class="col-span-2 font-label text-sm font-bold">#NM-46029</div>
+<div class="col-span-3 font-body text-sm text-secondary">June 18, 2024</div>
+<div class="col-span-3">
+<span class="inline-flex items-center gap-2 px-3 py-1 bg-error-container text-error text-[10px] font-bold uppercase tracking-widest">Cancelled</span>
+</div>
+<div class="col-span-2 font-label text-sm font-bold text-right">$125.00</div>
+<div class="col-span-2 flex justify-end gap-4">
+<button class="font-headline text-[10px] font-bold uppercase tracking-widest border-b border-transparent hover:border-primary transition-all">Details</button>
+</div>
+</div>
+</div>
+<!-- Bento Layout for Promotion -->
+<div class="mt-24 grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="relative aspect-[16/7] overflow-hidden group cursor-pointer bg-surface-container">
+<div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors z-10"></div>
+<img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Monochrome close-up of high-quality wool fabric texture with dramatic directional lighting and shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBS1lOvueWl-A7U3Hp-bL5iDTcVT5qQlM7QYopNKDEaJlPRWHEAzFIkFebXm3usxkhcB5UcpWhYFrWJKYTjGInSKYcOfI-DR20shT3Qah-p7RaHP9Sz9kfJ-NO8GQuC2doJl1OTNoIUWVs3KbAh5BLVCOq87cvXMxR7RXUXBYPcXy1mQt0QkG51fTjejf92Znvw6to-B9TW0I4f44c26xBSmnM6j3fR7YI97pR2Rqa0IuQ37PUFH6bL-MBU0-nWlrlGR9Q0h1Hl8A"/>
+<div class="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white">
+<p class="font-headline text-[10px] font-black uppercase tracking-[0.3em] mb-2">Exclusive Release</p>
+<h3 class="font-headline text-2xl font-black uppercase tracking-tight">The Winter Vault</h3>
+</div>
+</div>
+<div class="p-12 bg-primary text-on-primary flex flex-col justify-center">
+<h3 class="font-headline text-3xl font-black uppercase tracking-tight mb-4">Concierge Service</h3>
+<p class="font-body text-sm text-on-primary/70 mb-8 max-w-xs">Need to return a garment? Our white-glove concierge is at your service for effortless exchanges.</p>
+<button class="w-fit font-headline text-xs font-bold uppercase tracking-widest border-b-2 border-on-primary pb-1 hover:opacity-70 transition-opacity">Request Pickup</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer - Shared Component -->
+<footer class="w-full pt-24 pb-12 bg-stone-100 dark:bg-stone-950">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 max-w-full mx-auto">
+<div class="flex flex-col gap-6">
+<div class="text-xl font-black text-black dark:text-white uppercase">NMen</div>
+<p class="font-['Work_Sans'] text-xs uppercase tracking-widest leading-loose text-stone-500">© 2024 NMen. All Rights Reserved.</p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="font-['Work_Sans'] text-xs font-bold uppercase tracking-widest text-black mb-2">Navigation</p>
+<a class="font-['Work_Sans'] text-xs uppercase tracking-widest text-stone-500 hover:text-black underline-offset-4 hover:underline transition-all" href="#">About Us</a>
+<a class="font-['Work_Sans'] text-xs uppercase tracking-widest text-stone-500 hover:text-black underline-offset-4 hover:underline transition-all" href="#">FAQs</a>
+<a class="font-['Work_Sans'] text-xs uppercase tracking-widest text-stone-500 hover:text-black underline-offset-4 hover:underline transition-all" href="#">Terms</a>
+<a class="font-['Work_Sans'] text-xs uppercase tracking-widest text-stone-500 hover:text-black underline-offset-4 hover:underline transition-all" href="#">Shipping</a>
+</div>
+<div class="flex flex-col gap-4">
+<p class="font-['Work_Sans'] text-xs font-bold uppercase tracking-widest text-black mb-2">Social</p>
+<a class="font-['Work_Sans'] text-xs uppercase tracking-widest text-stone-500 hover:text-black underline-offset-4 hover:underline transition-all" href="#">Instagram</a>
+<a class="font-['Work_Sans'] text-xs uppercase tracking-widest text-stone-500 hover:text-black underline-offset-4 hover:underline transition-all" href="#">Facebook</a>
+<a class="font-['Work_Sans'] text-xs uppercase tracking-widest text-stone-500 hover:text-black underline-offset-4 hover:underline transition-all" href="#">Twitter</a>
+<a class="font-['Work_Sans'] text-xs uppercase tracking-widest text-stone-500 hover:text-black underline-offset-4 hover:underline transition-all" href="#">Pinterest</a>
+</div>
+<div class="flex flex-col gap-6">
+<p class="font-['Work_Sans'] text-xs font-bold uppercase tracking-widest text-black mb-2">Newsletter</p>
+<div class="relative">
+<input class="w-full bg-transparent border-0 border-b border-stone-300 py-2 font-['Work_Sans'] text-[10px] tracking-widest focus:ring-0 focus:border-black placeholder:text-stone-400" placeholder="EMAIL ADDRESS" type="email"/>
+<button class="absolute right-0 top-1/2 -translate-y-1/2 font-headline font-bold text-[10px] uppercase tracking-widest">Join</button>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
