@@ -60,7 +60,7 @@ export default function RegisterPage() {
           </div>
           <div className="max-w-md">
             <p className="font-headline text-white text-3xl font-light tracking-tight leading-snug">
-              Architectural precision for the modern masculine wardrobe.
+              Sự chính xác trong cấu trúc dành cho tủ đồ hiện đại của phái mạnh.
             </p>
             <div className="mt-8 w-12 h-1 bg-white"></div>
           </div>
@@ -79,15 +79,15 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-12">
-            <h2 className="font-headline font-extrabold text-4xl tracking-tighter text-black uppercase mb-2">Create Account</h2>
-            <p className="font-body text-stone-500 text-sm tracking-wide">Enter your details to join the NMen collective.</p>
+            <h2 className="font-headline font-extrabold text-4xl tracking-tighter text-black uppercase mb-2">Tạo Tài Khoản</h2>
+            <p className="font-body text-stone-500 text-sm tracking-wide">Nhập thông tin của bạn để gia nhập NMen.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             
             {/* Input Name */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="full_name" className="font-label text-xs font-semibold uppercase tracking-widest text-stone-600">Full Name</label>
+              <label htmlFor="full_name" className="font-label text-xs font-semibold uppercase tracking-widest text-stone-600">Họ và Tên</label>
               <input 
                 id="full_name" 
                 name="fullName" 
@@ -101,7 +101,7 @@ export default function RegisterPage() {
 
             {/* Input Email */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="email" className="font-label text-xs font-semibold uppercase tracking-widest text-stone-600">Email Address</label>
+              <label htmlFor="email" className="font-label text-xs font-semibold uppercase tracking-widest text-stone-600">Địa chỉ Email</label>
               <input 
                 id="email" 
                 name="email" 
@@ -115,7 +115,7 @@ export default function RegisterPage() {
 
             {/* Input Password 1 */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="password" className="font-label text-xs font-semibold uppercase tracking-widest text-stone-600">Password</label>
+              <label htmlFor="password" className="font-label text-xs font-semibold uppercase tracking-widest text-stone-600">Mật Khẩu</label>
               <div className="relative">
                 <input 
                   id="password" 
@@ -138,7 +138,7 @@ export default function RegisterPage() {
 
             {/* Input Password 2 (Confirm) */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="confirm_password" className="font-label text-xs font-semibold uppercase tracking-widest text-stone-600">Confirm Password</label>
+              <label htmlFor="confirm_password" className="font-label text-xs font-semibold uppercase tracking-widest text-stone-600">Xác Nhận Mật Khẩu</label>
               <div className="relative">
                 <input 
                   id="confirm_password" 
@@ -165,19 +165,19 @@ export default function RegisterPage() {
                 type="submit"
                 className="w-full py-5 bg-black text-white font-headline font-bold text-sm uppercase tracking-[0.2em] hover:bg-stone-800 active:scale-[0.98] transition-all duration-300" 
               >
-                Create Account
+                Đăng Ký Ngay
               </button>
               
               <div className="flex items-center gap-4 text-stone-300">
                 <div className="flex-grow h-px bg-current"></div>
-                <span className="font-label text-[10px] uppercase tracking-widest text-stone-400">or</span>
+                <span className="font-label text-[10px] uppercase tracking-widest text-stone-400">hoặc</span>
                 <div className="flex-grow h-px bg-current"></div>
               </div>
               
               <div className="flex justify-center">
                 <p className="font-body text-sm text-stone-500">
-                  Already have an account? 
-                  <Link href="/login" className="text-black font-bold ml-1 hover:underline underline-offset-4 transition-all">Login</Link>
+                  Đã có tài khoản? 
+                  <Link href="/login" className="text-black font-bold ml-1 hover:underline underline-offset-4 transition-all">Đăng nhập</Link>
                 </p>
               </div>
             </div>
@@ -186,7 +186,7 @@ export default function RegisterPage() {
           {/* Legal Footer Bottom */}
           <div className="mt-20">
             <p className="font-body text-[10px] text-stone-400 leading-relaxed uppercase tracking-widest text-center lg:text-left">
-              By creating an account, you agree to the NMen <span className="text-stone-600 cursor-pointer hover:text-black underline">Terms of Service</span> and <span className="text-stone-600 cursor-pointer hover:text-black underline">Privacy Policy</span>.
+              Bằng việc tạo tài khoản, bạn đồng ý với <span className="text-stone-600 cursor-pointer hover:text-black underline">Điều khoản dịch vụ</span> và <span className="text-stone-600 cursor-pointer hover:text-black underline">Chính sách bảo mật</span> của NMen.
             </p>
           </div>
           

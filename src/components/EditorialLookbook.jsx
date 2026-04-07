@@ -16,16 +16,16 @@ export default function EditorialLookbook() {
         
         {/* Tiêu đề phần Editorial */}
         <h2 className="font-headline text-5xl md:text-7xl font-bold uppercase mb-16 text-center text-black">
-          EDITORIAL
+          BỘ ẢNH
           <br />
-          <span className="font-light italic text-stone-500 text-3xl">Volume 04</span>
+          <span className="font-light italic text-stone-500 text-3xl">Ấn bản 04</span>
         </h2>
 
         {/* Chia lưới: Bên trái là ảnh to, bên phải là text và ảnh nhỏ */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full items-center">
           
           {/* Cột trái (Ảnh chính) */}
-          <div className="relative aspect-[4/5] bg-stone-200 w-full overflow-hidden">
+          <div className="relative aspect-4/5 bg-stone-200 w-full overflow-hidden">
             <Image
               src={LOOKBOOK_IMAGES.main}
               alt="Ảnh chính editorial"

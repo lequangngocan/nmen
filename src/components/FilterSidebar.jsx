@@ -4,9 +4,9 @@ import { useState } from "react";
 
 // mảng chứa các danh mục quần áo
 const CATEGORIES = [
-  { name: "Jackets", count: 24 },
-  { name: "Shirts", count: 48 },
-  { name: "Pants", count: 32 },
+  { name: "Áo khoác", count: 24 },
+  { name: "Áo sơ mi", count: 48 },
+  { name: "Quần", count: 32 },
 ];
 
 // mảng tính năng rỗng để chứa cái size
@@ -14,19 +14,19 @@ const SIZES = ["S", "M", "L", "XL"];
 
 // màu của đồ
 const COLORS = [
-  { name: "Black", hex: "#000000" },
-  { name: "Blue", hex: "#1e3a8a" },
-  { name: "Tan", hex: "#D2B48C" },
+  { name: "Đen", hex: "#000000" },
+  { name: "Xanh lam", hex: "#1e3a8a" },
+  { name: "Nâu", hex: "#D2B48C" },
 ];
 
 export default function FilterSidebar({ className }) {
   // khai báo biến state cho mảng
-  const [activeCategory, setActiveCategory] = useState("Jackets"); // biến chứa tên nút đang nhấp
+  const [activeCategory, setActiveCategory] = useState("Áo khoác"); // biến chứa tên nút đang nhấp
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
   
   // biến giá
-  const [priceMax, setPriceMax] = useState(1000);
+  const [priceMax, setPriceMax] = useState(5000000);
 
   // Hàm chọn/bỏ chọn Size
   const toggleSize = (size) => {
@@ -128,16 +128,16 @@ export default function FilterSidebar({ className }) {
         {/* input chỉnh range giá */}
         <input 
           type="range" 
-          min="50" 
-          max="1500" 
-          step="10" 
+          min="500000" 
+          max="20000000" 
+          step="500000" 
           value={priceMax} 
           onChange={(e) => setPriceMax(Number(e.target.value))}
           className="w-full mb-2 accent-black" 
         />
-        <div className="flex justify-between text-sm text-gray-500 font-bold">
-          <span>$50</span>
-          <span>${priceMax}</span>
+        <div className="flex justify-between text-[10px] sm:text-xs text-gray-500 font-bold">
+          <span>500,000 đ</span>
+          <span>{priceMax.toLocaleString("vi-VN")} đ</span>
         </div>
       </div>
       

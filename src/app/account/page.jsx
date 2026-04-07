@@ -5,13 +5,13 @@ import { Edit3, MoreVertical, MapPin } from "lucide-react";
 
 export default function AccountProfilePage() {
   const userData = {
-    fullName: "Julian Thorne",
-    email: "julian.thorne@editorial.com",
-    phone: "+1 (212) 555-0198",
-    tier: "Black Tier",
-    joined: "Oct 2022",
-    city: "Brooklyn, NY",
-    address: "452 Lafayette Street,\nSuite 4B - NoHo,\nNew York, NY 10003\nUnited States",
+    fullName: "Nguyễn Văn A",
+    email: "nguyenvana@example.com",
+    phone: "+84 987 654 321",
+    tier: "Hạng Đen",
+    joined: "Tháng 10, 2023",
+    city: "Hà Nội, Việt Nam",
+    address: "Khu vực Sảnh A, Tòa ICT\nQuận Cầu Giấy, Hà Nội",
     points: "1,250",
     avatarUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuATEaYUazAVsZXOx6dN4CdxZZqeRc3dYw829vJ0NdkzN7ahDw4yPkdDaQ7hK1Tq7FbC2oVa1XoVzmhaKzCatcOgZwwQYCK3MIUsEZmT-SLgzUEA4wG_srBEwdE0NTGK4LOYTUWJ_gVm87_PPg7Pbvqksu-8Cz5FeVFMvr-llZfDXkmJisY-qTWI1eqt8alaXmPJkrkPqD71QxUe-PnCNHGna7GkJohDtS3FmQWUVi0uabMBs9N8MtOz6s1Ki9BLxt2xqZMhrGORtw",
   };
@@ -102,7 +102,7 @@ export default function AccountProfilePage() {
           <div className="space-y-2 text-center md:text-left">
             <h3 className="font-headline font-black text-xl uppercase tracking-tighter text-black">{userData.fullName}</h3>
             <p className="text-stone-500 text-sm leading-relaxed">
-              Member since {userData.joined}<br />
+              Thành viên từ {userData.joined}<br />
               {userData.city}
             </p>
           </div>
@@ -114,10 +114,10 @@ export default function AccountProfilePage() {
           {/* Header Box Địa Chỉ */}
           <div>
             <span className="font-label text-xs font-bold uppercase tracking-[0.2em] text-stone-500 mb-2 block">
-              Location & Billing
+              Địa chỉ & Thanh toán
             </span>
             <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tighter uppercase text-black">
-              Verified Address
+              Địa Chỉ Xác Minh
             </h2>
           </div>
           
@@ -127,7 +127,7 @@ export default function AccountProfilePage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                    <MapPin size={18} className="fill-black text-white" />
-                  <span className="font-label text-[10px] font-black uppercase tracking-widest bg-stone-100 px-2 py-1 text-black">Primary</span>
+                  <span className="font-label text-[10px] font-black uppercase tracking-widest bg-stone-100 px-2 py-1 text-black">Mặc định</span>
                 </div>
                 <p className="font-body text-xl md:text-2xl font-light leading-relaxed whitespace-pre-line text-black">
                   {userData.address}
@@ -140,9 +140,9 @@ export default function AccountProfilePage() {
             </div>
 
             <div className="flex flex-wrap gap-8 pt-6">
-              <button className="font-label text-[10px] font-black uppercase tracking-widest text-black underline underline-offset-8 hover:text-stone-500 transition-all">Modify</button>
-              <button className="font-label text-[10px] font-black uppercase tracking-widest text-black underline underline-offset-8 hover:text-stone-500 transition-all">Delete</button>
-              <button className="font-label text-[10px] font-black uppercase tracking-widest text-black underline underline-offset-8 hover:text-stone-500 transition-all">Add New</button>
+              <button className="font-label text-[10px] font-black uppercase tracking-widest text-black underline underline-offset-8 hover:text-stone-500 transition-all">Chỉnh sửa</button>
+              <button className="font-label text-[10px] font-black uppercase tracking-widest text-black underline underline-offset-8 hover:text-stone-500 transition-all">Xóa</button>
+              <button className="font-label text-[10px] font-black uppercase tracking-widest text-black underline underline-offset-8 hover:text-stone-500 transition-all">Thêm mới</button>
             </div>
           </div>
 
@@ -151,17 +151,17 @@ export default function AccountProfilePage() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-stone-800 opacity-50 -mr-20 -mt-20 rotate-45 pointer-events-none"></div>
             
             <div className="relative z-10 space-y-6">
-              <h4 className="font-headline text-2xl font-black tracking-tighter uppercase">Editorial Rewards</h4>
+              <h4 className="font-headline text-2xl font-black tracking-tighter uppercase">Điểm Thưởng Editorial</h4>
               
               <div className="flex items-end gap-2">
                 <span className="text-5xl font-headline font-black">{userData.points}</span>
-                <span className="font-label text-[10px] text-white/60 uppercase tracking-widest mb-2">Points</span>
+                <span className="font-label text-[10px] text-white/60 uppercase tracking-widest mb-2">Điểm</span>
               </div>
               
               <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
                 <div className="w-[75%] h-full bg-white rounded-full"></div>
               </div>
-              <p className="text-white/60 font-label text-[10px] uppercase tracking-widest">250 points until next reward</p>
+              <p className="text-white/60 font-label text-[10px] uppercase tracking-widest">Cần 250 điểm để nhận thưởng tiếp theo</p>
             </div>
           </div>
 

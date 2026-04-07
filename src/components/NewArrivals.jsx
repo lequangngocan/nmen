@@ -10,18 +10,18 @@ export default function NewArrivals() {
       <div className="flex justify-between items-end mb-16">
         <div>
           <h2 className="font-headline text-3xl md:text-4xl font-extrabold tracking-tighter uppercase mb-2 text-black">
-            New Arrivals
+            Hàng mới về
           </h2>
           <p className="font-body text-stone-500 text-xs md:text-sm uppercase tracking-widest">
-            Selected pieces for the modern silhouette
+            Thiết kế dành riêng cho quý ông hiện đại
           </p>
         </div>
         
         <Link 
-          href="/new-arrivals"
+          href="/clothing"
           className="font-headline text-xs font-bold uppercase tracking-widest text-black border-b border-black pb-1 hover:opacity-60 transition-opacity whitespace-nowrap shrink-0 ml-4"
         >
-          View All
+          Xem tất cả
         </Link>
       </div>
 

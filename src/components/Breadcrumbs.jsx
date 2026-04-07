@@ -13,7 +13,7 @@ export default function Breadcrumbs() {
       <ol className="flex items-center space-x-2 text-xs font-label uppercase tracking-widest text-stone-400">
         <li>
           <Link href="/" className="hover:text-black transition-colors">
-            Home
+            Trang chủ
           </Link>
         </li>
         {paths.map((path, index) => {

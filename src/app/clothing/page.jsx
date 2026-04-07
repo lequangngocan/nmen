@@ -16,10 +16,10 @@ export default function ClothingPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mt-2">
           <div>
             <h1 className="text-6xl font-headline font-black tracking-tighter uppercase leading-none text-black">
-              Men&apos;s Jackets
+              Áo Khoác Nam
             </h1>
             <p className="mt-4 text-stone-500 max-w-xl font-body text-sm leading-relaxed uppercase tracking-wide">
-              A curated selection of precision-engineered outerwear designed for the modern architectural lifestyle.
+              Tuyển tập những thiết kế áo khoác tinh xảo dành riêng cho phong cách sống hiện đại.
             </p>
           </div>
           
@@ -29,12 +29,12 @@ export default function ClothingPage() {
 
             {/* Sort Dropdown */}
             <div className="flex-1 md:flex-none flex items-center space-x-4 border-b border-black pb-2 min-w-[140px] md:min-w-[200px] justify-between cursor-pointer group relative">
-              <span className="font-headline font-bold text-xs uppercase tracking-tighter text-black">Sort: Featured</span>
+              <span className="font-headline font-bold text-xs uppercase tracking-tighter text-black">Sắp xếp: Nổi bật</span>
               <ChevronDown size={14} className="text-black" />
               
               {/* Dropdown Menu */}
               <div className="absolute top-full left-0 right-0 mt-2 bg-white shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-10">
-                {["Featured", "Price: Low to High", "Price: High to Low", "Newest Arrivals"].map((v) => (
+                {["Nổi bật", "Giá: Thấp đến Cao", "Giá: Cao đến Thấp", "Hàng mới nhất"].map((v) => (
                   <div key={v} className="px-4 py-3 text-[10px] font-label text-stone-500 hover:bg-stone-50 hover:text-black uppercase tracking-widest transition-colors">
                     {v}
                   </div>

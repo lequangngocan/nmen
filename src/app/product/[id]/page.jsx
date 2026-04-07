@@ -70,9 +70,9 @@ export default function ProductDetailPage({ params }) {
             {/* Tên và Giá hiển thị */}
             <div className="space-y-4 text-left">
               <Breadcrumbs />
-              <p className="font-label text-xs uppercase tracking-[0.2em] text-stone-500 mt-4">Outerwear / Collection 04</p>
-              <h1 className="font-headline text-5xl font-extrabold tracking-tighter leading-none">The Essential NMen Suede Jacket</h1>
-              <p className="font-headline text-2xl font-light text-black">$350.00</p>
+              <p className="font-label text-xs uppercase tracking-[0.2em] text-stone-500 mt-4">Áo Khoác / Bộ Sưu Tập 04</p>
+              <h1 className="font-headline text-5xl font-extrabold tracking-tighter leading-none">Áo khoác da lộn NMen Cao Cấp</h1>
+              <p className="font-headline text-2xl font-light text-black">8,750,000 đ</p>
             </div>
             
             {/* đường kẻ ngang */}
@@ -83,7 +83,7 @@ export default function ProductDetailPage({ params }) {
               
               {/* Chọn màu */}
               <div className="space-y-4">
-                <span className="font-label text-[10px] uppercase tracking-widest text-stone-500">Select Color / Anthracite</span>
+                <span className="font-label text-[10px] uppercase tracking-widest text-stone-500">Chọn màu / Xám đen</span>
                 <div className="flex gap-4">
                   {COLORS.map((color) => (
                     <button 
@@ -99,8 +99,8 @@ export default function ProductDetailPage({ params }) {
               {/* Chọn kích thước */}
               <div className="space-y-4">
                 <div className="flex justify-between items-end">
-                  <span className="font-label text-[10px] uppercase tracking-widest text-stone-500">Select Size</span>
-                  <button className="font-label text-[10px] uppercase tracking-widest underline underline-offset-4 text-stone-700 hover:text-black">Size Guide</button>
+                  <span className="font-label text-[10px] uppercase tracking-widest text-stone-500">Chọn Size</span>
+                  <button className="font-label text-[10px] uppercase tracking-widest underline underline-offset-4 text-stone-700 hover:text-black">Hướng dẫn chọn Size</button>
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   {SIZES.map((size) => (
@@ -122,11 +122,11 @@ export default function ProductDetailPage({ params }) {
                 onClick={handleAddToCart}
                 className="w-full py-6 bg-black text-white font-headline font-bold uppercase tracking-widest hover:bg-stone-800"
               >
-                Add to Cart
+                Thêm vào Giỏ Hàng
               </button>
               <button className="w-full py-4 border border-stone-200 font-label text-[10px] uppercase tracking-widest hover:bg-stone-50 flex items-center justify-center gap-2">
                 <Heart size={14} />
-                Add to Wishlist
+                Thêm vào Yêu Thích
               </button>
             </div>
             
@@ -134,21 +134,21 @@ export default function ProductDetailPage({ params }) {
             <div className="space-y-6">
               <details className="group border-b border-stone-200 pb-4" open>
                 <summary className="list-none flex justify-between items-center cursor-pointer font-headline font-bold uppercase text-xs tracking-widest">
-                  Description
+                  Mô Tả
                   <ChevronDown size={16} className="group-open:rotate-180 transition-transform" />
                 </summary>
                 <p className="pt-4 text-sm leading-relaxed text-stone-600 font-body">
-                  A cornerstone of the NMen silhouette. Crafted from buttery-soft Italian goatskin suede, this jacket features a minimalist tailored cut, hidden horn-button closures, and a semi-structured shoulder for an architectural profile.
+                  Cốt lõi của phong cách NMen. Được chế tác từ da lộn Ý siêu mềm, chiếc áo khoác này mang đường may tối giản, khuy sừng ẩn và cầu vai kết cấu hoàn hảo.
                 </p>
               </details>
 
               <details className="group border-b border-stone-200 pb-4">
                 <summary className="list-none flex justify-between items-center cursor-pointer font-headline font-bold uppercase text-xs tracking-widest">
-                  Composition & Care
+                  Chất Liệu & Bảo Quản
                   <ChevronDown size={16} className="group-open:rotate-180 transition-transform" />
                 </summary>
                 <p className="pt-4 text-sm leading-relaxed text-stone-600 font-body">
-                  100% Suede Leather. Lining: 100% Cupro. Professional leather clean only. Handle with care.
+                  100% Da lộn. Lớp lót: 100% Cupro. Giặt hấp chuyên nghiệp. Xử lý nhẹ nhàng.
                 </p>
               </details>
             </div>
@@ -160,9 +160,9 @@ export default function ProductDetailPage({ params }) {
       {/* Gợi Ý Sản Phẩm dưới đáy */}
       <section className="py-32 px-12 bg-stone-100">
         <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4">
-          <h2 className="font-headline text-4xl font-black tracking-tighter uppercase text-black">Complete the Look</h2>
+          <h2 className="font-headline text-4xl font-black tracking-tighter uppercase text-black">Gợi ý phối đồ</h2>
           <div className="h-px grow mx-12 hidden md:block bg-stone-300"></div>
-          <a className="font-label text-xs uppercase tracking-widest border-b border-black text-black" href="/clothing">View All Collection</a>
+          <a className="font-label text-xs uppercase tracking-widest border-b border-black text-black" href="/clothing">Xem tất cả Bộ Sưu Tập</a>
         </div>
         
         {/* Render 3 cái áo quần bên dưới bằng mảng cứng */}
@@ -177,12 +177,12 @@ export default function ProductDetailPage({ params }) {
       <section className="py-32 px-12 bg-surface">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-20 space-y-4">
-            <h2 className="font-headline text-3xl font-black uppercase tracking-tighter text-black">Verified Reviews</h2>
+            <h2 className="font-headline text-3xl font-black uppercase tracking-tighter text-black">Đánh Giá Nổi Bật</h2>
             <div className="flex justify-center items-center gap-1 text-black">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} size={14} className="fill-black" />
               ))}
-              <span className="font-label text-xs ml-2">4.9 / 5.0 (24 Reviews)</span>
+              <span className="font-label text-xs ml-2">4.9 / 5.0 (24 Đánh giá)</span>
             </div>
           </div>
           
@@ -193,7 +193,7 @@ export default function ProductDetailPage({ params }) {
                 <span className="font-label text-[10px] text-stone-500">MARCH 12, 2024</span>
               </div>
               <p className="font-body text-sm leading-relaxed text-stone-600 max-w-2xl">
-                "The quality of the suede is unparalleled at this price point. The cut is modern but not overly slim. It feels substantial and looks incredibly premium."
+                &quot;Chất lượng da lộn thực sự chưa từng thấy ở mức giá này. Form dáng hiện đại nhưng không quá ôm. Mặc lên có cảm giác rất chất lượng và sang trọng.&quot;
               </p>
             </div>
             
@@ -203,14 +203,14 @@ export default function ProductDetailPage({ params }) {
                 <span className="font-label text-[10px] text-stone-500">FEBRUARY 28, 2024</span>
               </div>
               <p className="font-body text-sm leading-relaxed text-stone-600 max-w-2xl">
-                "Perfect architectural silhouette. Pairs exceptionally well with the tailored trousers. A true investment piece for the minimalist wardrobe."
+                &quot;Form dáng cực đẹp. Rất hợp khi mặc cùng quần âu. Một món đồ thực sự xứng đáng cho tủ đồ tối giản của tôi.&quot;
               </p>
             </div>
           </div>
           
           <div className="mt-20 flex justify-center text-black">
             <button className="px-12 py-4 border border-black font-headline font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all">
-              Write a Review
+              Viết Đánh Giá
             </button>
           </div>
         </div>

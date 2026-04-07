@@ -17,26 +17,25 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-// mảng chứa link menu
 const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "New Arrivals", href: "/clothing" },
-  { label: "Clothing", href: "/clothing" },
-  { label: "Accessories", href: "/clothing" },
-  { label: "Sale", href: "/clothing" },
+  { label: "Trang chủ", href: "/" },
+  { label: "Hàng mới", href: "/clothing" },
+  { label: "Quần áo", href: "/clothing" },
+  { label: "Phụ kiện", href: "/clothing" },
+  { label: "Khuyến mãi", href: "/clothing" },
 ];
 
 // link của phần user
 const userMenuItems = [
   { label: "Tài khoản", href: "/account", Icon: UserCircle2 },
-  { label: "Đơn mua", href: "/orders", Icon: ShoppingBasket },
-  { label: "Yêu thích", href: "/wishlist", Icon: Heart }, 
-  { label: "Đăng xuất", href: "/logout", Icon: LogOut, danger: true },
+  { label: "Đơn mua", href: "/account/history", Icon: ShoppingBasket },
+  { label: "Yêu thích", href: "/account/wishlist", Icon: Heart }, 
+  { label: "Đăng xuất", href: "/login", Icon: LogOut, danger: true },
 ];
 
 export default function Header() {
   // khai báo state cho react
-  const [activeLink, setActiveLink] = useState("Home"); // lưu tab đang active
+  const [activeLink, setActiveLink] = useState("Trang chủ"); // lưu tab đang active
   const [mobileNavOpen, setMobileNavOpen] = useState(false); // ẩn hiện menu di động
   const [userDrawerOpen, setUserDrawerOpen] = useState(false); // ẩn hiện acc ở di động
   const [searchOpen, setSearchOpen] = useState(false); // bật ô search

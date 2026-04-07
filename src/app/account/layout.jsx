@@ -17,7 +17,7 @@ export default function AccountLayout({ children }) {
         {/* CỘT TRÁI: SIDEBAR NAVIGATION DÙNG CHUNG CHO MỌI TAB TRONG ACCOUNT */}
         <aside className="lg:col-span-3 mb-12 lg:mb-0">
           <div className="sticky top-32 space-y-8">
-            <h2 className="font-headline text-xs font-black tracking-widest uppercase text-stone-400">My Account</h2>
+            <h2 className="font-headline text-xs font-black tracking-widest uppercase text-stone-400">Tài Khoản</h2>
             
             <nav className="flex flex-col gap-4">
               
@@ -26,7 +26,7 @@ export default function AccountLayout({ children }) {
                 className="flex items-center gap-3 font-label text-sm font-medium text-stone-500 hover:text-black transition-colors py-2 group"
               >
                 <Home size={20} />
-                Home
+                Trang Chủ
               </Link>
 
               <Link 
@@ -38,7 +38,7 @@ export default function AccountLayout({ children }) {
                 }`}
               >
                 <User size={20} className={isActive('/account') ? "fill-black" : ""} />
-                Profile
+                Hồ Sơ
               </Link>
               
               <Link 
@@ -50,7 +50,7 @@ export default function AccountLayout({ children }) {
                 }`}
               >
                 <ReceiptText size={20} className={isActive('/account/history') ? "fill-black" : ""} />
-                Order History
+                Lịch Sử Đơn Hàng
               </Link>
 
               <Link 
@@ -62,14 +62,14 @@ export default function AccountLayout({ children }) {
                 }`}
               >
                 <Heart size={20} className={isActive('/account/wishlist') ? "fill-black" : ""} />
-                Wishlist
+                Yêu Thích
               </Link>
 
               <div className="pt-6 border-t border-stone-200 mt-4">
-                <button className="flex items-center gap-3 font-label text-sm font-medium text-red-600 hover:opacity-70 transition-opacity py-2 group">
+                <Link href="/login" className="flex items-center gap-3 font-label text-sm font-medium text-red-600 hover:opacity-70 transition-opacity py-2 group">
                   <LogOut size={20} />
-                  Sign Out
-                </button>
+                  Đăng Xuất
+                </Link>
               </div>
 
             </nav>
@@ -77,9 +77,9 @@ export default function AccountLayout({ children }) {
             {/* Member Perk Bonus Box */}
             <div className="pt-12 hidden lg:block">
               <div className="p-6 bg-stone-100 border-l-4 border-black">
-                <p className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] mb-2 text-black">Member Perk</p>
+                <p className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] mb-2 text-black">Đặc Quyền Thành Viên</p>
                 <p className="font-body text-xs leading-relaxed text-stone-500">
-                  Enjoy complimentary shipping on all orders over $250.
+                  Tận hưởng giao hàng miễn phí cho mọi đơn hàng trên 2.500.000 đ.
                 </p>
               </div>
             </div>

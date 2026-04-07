@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NMen - Cửa hàng thời trang nam
 
-## Getting Started
+Dự án Frontend cho website cửa hàng thời trang nam NMen.
+Được xây dựng bằng [Next.js](https://nextjs.org/) và [Tailwind CSS](https://tailwindcss.com/).
 
-First, run the development server:
+## 🛠 Yêu cầu hệ thống
+
+- [Node.js](https://nodejs.org/) (phiên bản 18 trở lên)
+- Trình duyệt web (Chrome, Edge, Firefox,...)
+- Một trình soạn thảo code (khuyên dùng [Visual Studio Code](https://code.visualstudio.com/))
+
+## 🚀 Hướng dẫn cài đặt và chạy dự án
+
+**Bước 1:** Tải dự án về máy tính và giải nén (hoặc git clone).
+
+**Bước 2:** Mở Terminal (Command Prompt / PowerShell / VS Code Terminal) trỏ tới thư mục chứa dự án.
+
+**Bước 3:** Cài đặt các thư viện phụ thuộc bằng lệnh sau:
+
+```bash
+npm install
+```
+
+**Bước 4:** Chạy dự án:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Bước 5:** Mở trình duyệt web và truy cập vào địa chỉ:
+👉 **[http://localhost:3000](http://localhost:3000)**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Cấu trúc thư mục chính
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/app`: Chứa các trang giao diện của website (Trang chủ, Sản phẩm, Giỏ hàng, Đăng nhập,...).
+- `src/components`: Chứa các thành phần (component) giao diện dùng chung (Header, Footer, ProductCard,...).
+- `src/constants`: Chứa các dữ liệu mẫu dùng tạm (Mock data).
+- `public`: Chứa các thiết kế, hình ảnh, tài nguyên tĩnh.

@@ -44,14 +44,14 @@ export default function LoginPage() {
         {/* Brand Header */}
         <div className="mb-12 text-center">
           <Link href="/" className="font-headline text-4xl font-black tracking-tighter uppercase text-black hover:opacity-80 transition-opacity">NMen</Link>
-          <p className="font-label text-xs uppercase tracking-[0.2em] text-stone-500 mt-2">The Digital Monolith</p>
+          <p className="font-label text-xs uppercase tracking-[0.2em] text-stone-500 mt-2">Nền tảng thời trang số</p>
         </div>
 
         {/* Auth Card Box */}
         <div className="bg-white p-10 md:p-12 shadow-xl ring-1 ring-black/5 rounded-sm">
           <div className="mb-10">
-            <h2 className="font-headline text-2xl font-bold tracking-tight text-black">Login</h2>
-            <p className="font-body text-sm text-stone-500 mt-1">Enter your credentials to access your profile.</p>
+            <h2 className="font-headline text-2xl font-bold tracking-tight text-black">Đăng Nhập</h2>
+            <p className="font-body text-sm text-stone-500 mt-1">Nhập thông tin xác thực để truy cập hồ sơ của bạn.</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-8">
@@ -59,7 +59,7 @@ export default function LoginPage() {
             {/* Input Email */}
             <div className="group relative">
               <label htmlFor="email" className="font-label text-[10px] uppercase tracking-widest text-stone-500 block mb-2 transition-colors group-focus-within:text-black">
-                Email Address
+                Địa chỉ Email
               </label>
               <input 
                 id="email" 
@@ -76,10 +76,10 @@ export default function LoginPage() {
             <div className="group relative">
               <div className="flex justify-between items-center mb-2">
                 <label htmlFor="password" className="font-label text-[10px] uppercase tracking-widest text-stone-500 transition-colors group-focus-within:text-black">
-                  Password
+                  Mật Khẩu
                 </label>
                 <Link href="#" className="font-label text-[10px] uppercase tracking-widest text-stone-400 hover:text-black transition-colors underline-offset-4 hover:underline shrink-0">
-                  Forgot Password?
+                  Quên mật khẩu?
                 </Link>
               </div>
               <div className="relative">
@@ -111,7 +111,7 @@ export default function LoginPage() {
                 className="w-4 h-4 border-stone-300 rounded-none text-black focus:ring-offset-0 focus:ring-0 cursor-pointer accent-black bg-white"
               />
               <label htmlFor="remember" className="font-label text-xs text-stone-500 cursor-pointer hover:text-black transition-colors">
-                Remember my session
+                Ghi nhớ đăng nhập
               </label>
             </div>
 
@@ -121,7 +121,7 @@ export default function LoginPage() {
                 type="submit"
                 className="w-full bg-black text-white py-5 font-headline font-bold uppercase text-xs tracking-widest hover:bg-stone-800 transition-all active:scale-[0.98]"
               >
-                Login to Account
+                Đăng Nhập Ngay
               </button>
             </div>
           </form>
@@ -129,7 +129,7 @@ export default function LoginPage() {
           {/* Social Divider */}
           <div className="relative my-10 flex items-center">
             <div className="flex-grow border-t border-stone-200"></div>
-            <span className="flex-shrink mx-4 font-label text-[10px] uppercase tracking-widest text-stone-400">OR CONTINUE WITH</span>
+            <span className="flex-shrink mx-4 font-label text-[10px] uppercase tracking-widest text-stone-400">HOẶC TIẾP TỤC VỚI</span>
             <div className="flex-grow border-t border-stone-200"></div>
           </div>
 
@@ -154,9 +154,9 @@ export default function LoginPage() {
         {/* Footer Text Link Create Account */}
         <div className="mt-8 text-center relative z-20">
           <p className="font-body text-sm text-stone-500">
-            New to NMen? 
+            Bạn là người dùng mới? 
             <Link href="/register" className="font-bold text-black underline underline-offset-4 decoration-1 hover:decoration-2 transition-all ml-1">
-              Create an Account
+              Tạo tài khoản
             </Link>
           </p>
         </div>

@@ -67,14 +67,14 @@ export default function Hero() {
 
           {/* Tagline */}
           <p className="font-label text-xs tracking-[0.3em] uppercase mb-4 opacity-70 text-black">
-            Spring Summer 2024
+            Xuân Hè 2024
           </p>
 
           {/* H1 — design: leading-[0.85], tracking-tighter, UPPERCASE */}
           <h1 className="font-headline font-extrabold tracking-tighter text-black uppercase leading-[0.85] mb-8 text-5xl sm:text-6xl md:text-7xl">
-            SHOP NEW
+            BỘ SƯU TẬP
             <br />
-            ARRIVAL
+            MỚI NHẤT
           </h1>
 
           {/* CTA Button
@@ -98,7 +98,7 @@ export default function Hero() {
               "transition-all duration-200 active:scale-95",
             ].join(" ")}
           >
-            Explore Collection
+            Khám phá ngay
           </Link>
         </div>
       </div>
@@ -110,7 +110,7 @@ export default function Hero() {
           className="font-label text-[10px] uppercase tracking-widest opacity-40 text-black"
           style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
         >
-          NMEN EXCLUSIVE MONOLITH SERIES 01
+          NMEN BỘ SƯU TẬP ĐỘC QUYỀN 01
         </p>
       </div>
     </header>

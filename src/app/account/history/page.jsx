@@ -7,21 +7,21 @@ export default function OrderHistoryPage() {
   
   // Dữ liệu giả lập 4 Đơn hàng (Mock Data)
   const orders = [
-    { id: "NM-49201", date: "October 24, 2024", status: "In Transit", total: "$1,240.00" },
-    { id: "NM-48592", date: "September 12, 2024", status: "Delivered", total: "$450.00" },
-    { id: "NM-47110", date: "August 05, 2024", status: "Delivered", total: "$2,890.00" },
-    { id: "NM-46029", date: "June 18, 2024", status: "Cancelled", total: "$125.00" },
+    { id: "NM-49201", date: "24/10/2024", status: "Đang giao", total: "12.400.000 đ" },
+    { id: "NM-48592", date: "12/09/2024", status: "Đã giao", total: "4.500.000 đ" },
+    { id: "NM-47110", date: "05/08/2024", status: "Đã giao", total: "28.900.000 đ" },
+    { id: "NM-46029", date: "18/06/2024", status: "Đã hủy", total: "1.250.000 đ" },
   ];
 
   // Hàm render cái nhãn trạng thái (Status Badge) dựa vào tên
   const renderStatusBadge = (status) => {
     switch (status) {
-      case "In Transit":
-        return <span className="inline-flex items-center px-3 py-1 bg-black text-white text-[10px] font-bold uppercase tracking-widest">In Transit</span>;
-      case "Delivered":
-        return <span className="inline-flex items-center px-3 py-1 bg-stone-200 text-black text-[10px] font-bold uppercase tracking-widest">Delivered</span>;
-      case "Cancelled":
-        return <span className="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 text-[10px] font-bold uppercase tracking-widest">Cancelled</span>;
+      case "Đang giao":
+        return <span className="inline-flex items-center px-3 py-1 bg-black text-white text-[10px] font-bold uppercase tracking-widest">Đang giao</span>;
+      case "Đã giao":
+        return <span className="inline-flex items-center px-3 py-1 bg-stone-200 text-black text-[10px] font-bold uppercase tracking-widest">Đã giao</span>;
+      case "Đã hủy":
+        return <span className="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 text-[10px] font-bold uppercase tracking-widest">Đã hủy</span>;
       default:
         return null;
     }
@@ -32,9 +32,9 @@ export default function OrderHistoryPage() {
       
       {/* Tiêu đề Box Order History */}
       <header className="mb-10 lg:mb-16">
-        <h1 className="font-headline text-4xl mt-3 lg:text-5xl font-black tracking-tighter uppercase mb-4 text-black">Order History</h1>
+        <h1 className="font-headline text-4xl mt-3 lg:text-5xl font-black tracking-tighter uppercase mb-4 text-black">Lịch sử Đơn hàng</h1>
         <p className="font-body text-stone-500 max-w-xl text-sm lg:text-base leading-relaxed">
-          Track your recent purchases, download invoices, and manage returns from your digital closet vault.
+          Theo dõi các giao dịch mua gần đây, tải xuống hóa đơn và quản lý các yêu cầu đổi trả.
         </p>
       </header>
 
@@ -43,10 +43,10 @@ export default function OrderHistoryPage() {
         
         {/* Table Header (Ẩn trên Mobile, chỉ hiện từ PC/Ipad) */}
         <div className="hidden md:grid grid-cols-12 gap-4 px-6 pb-4 border-b border-stone-300">
-          <div className="col-span-2 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400">Order ID</div>
-          <div className="col-span-3 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400">Date</div>
-          <div className="col-span-3 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400">Status</div>
-          <div className="col-span-2 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400 text-right">Total</div>
+          <div className="col-span-2 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400">Mã Đơn hàng</div>
+          <div className="col-span-3 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400">Ngày đặt</div>
+          <div className="col-span-3 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400">Trạng thái</div>
+          <div className="col-span-2 font-headline text-[10px] font-black uppercase tracking-widest text-stone-400 text-right">Tổng tiền</div>
           <div className="col-span-2"></div>
         </div>
 
@@ -82,7 +82,7 @@ export default function OrderHistoryPage() {
                 href={`/order/${order.id.replace('NM-', '')}`}
                 className="font-headline text-[10px] font-bold uppercase tracking-widest text-black border-b border-transparent hover:border-black transition-all"
               >
-                Details
+                Chi tiết
               </Link>
             </div>
           </div>
@@ -102,19 +102,19 @@ export default function OrderHistoryPage() {
             className="absolute inset-0 object-cover group-hover:scale-105 transition-transform duration-700" 
           />
           <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white">
-            <p className="font-headline text-[10px] font-black uppercase tracking-[0.3em] mb-2 text-stone-300">Exclusive Release</p>
-            <h3 className="font-headline text-2xl font-black uppercase tracking-tight">The Winter Vault</h3>
+            <p className="font-headline text-[10px] font-black uppercase tracking-[0.3em] mb-2 text-stone-300">Phiên Bản Giới Hạn</p>
+            <h3 className="font-headline text-2xl font-black uppercase tracking-tight">Bộ Sưu Tập Mùa Đông</h3>
           </div>
         </div>
 
         {/* Khối Đen Text (Concierge Service) */}
         <div className="p-10 lg:p-12 bg-black text-white flex flex-col justify-center shadow-lg">
-          <h3 className="font-headline text-3xl font-black uppercase tracking-tight mb-4">Concierge Service</h3>
+          <h3 className="font-headline text-3xl font-black uppercase tracking-tight mb-4">Dịch vụ chăm sóc</h3>
           <p className="font-body text-sm text-stone-400 mb-8 max-w-xs leading-relaxed">
-            Need to return a garment? Our white-glove concierge is at your service for effortless exchanges.
+            Bạn cần trả lại sản phẩm? Dịch vụ chăm sóc tận tình của chúng tôi sẽ hỗ trợ đổi trả một cách dễ dàng.
           </p>
           <button className="w-fit font-headline text-xs font-bold uppercase tracking-widest border-b-[1px] border-white pb-1 hover:text-stone-300 hover:border-stone-300 transition-all">
-            Request Pickup
+            Yêu cầu hỗ trợ
           </button>
         </div>
 

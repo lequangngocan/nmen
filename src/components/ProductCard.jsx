@@ -53,7 +53,7 @@ export default function ProductCard({ product }) {
         
         {/* Price: Neutral gray */}
         <p className="font-label text-sm mt-1.5 text-stone-500">
-          ${product.price.toFixed(2)}
+          {product.price.toLocaleString("vi-VN")} đ
         </p>
       </div>
     </Link>

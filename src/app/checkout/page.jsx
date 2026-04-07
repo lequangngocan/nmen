@@ -9,18 +9,18 @@ import { Lock } from "lucide-react";
 const ORDER_ITEMS = [
   {
     id: "o1",
-    name: "Obsidian Overcoat",
+    name: "Áo khoác dài Obsidian",
     size: "48",
     qty: 1,
-    price: 850.00,
+    price: 21250000,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBiEX7hOXIP5ehb_f66k_cMtMhopr14KSPsOUBKNCvN0kOe5D6WgQe0RvoVvZVg6DB4lvHsxHVyfSEGkxjA6k-Oxf4Klf2aPeMAZdzJWKjiHK8xw8oacy3iR_LUgjHqLIK4izbNaiguFJRB3rjoOl4bNJFsTksC4IQm6Vf-hQSh4mWsqN0v5rM9KBkAepQ_mz-EVoonODM1ZcKmqmEyO2n-tCvmPt_WKVjPgHciuj-EsbALjGz6C5oQ17O-XQ0MqSYWL8QhlYE4tg"
   },
   {
     id: "o2",
-    name: "Anthracite Knit",
+    name: "Áo len Anthracite",
     size: "M",
     qty: 1,
-    price: 295.00,
+    price: 7375000,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAvMfzGXSv2MoPKdK1yXYX4Vg5fIVVU86ghyvCEyUdthclDO_cx3MnfzMMjA46bDgQQTnUr0yBTDIr4ICWV2W4VxILczrKZzHG3J2pUDVwEmFKasT_t6YO_yqWo2V0hG_eprPd0ejhbENYqhgjrXAUOPwmdmp0_9G1GCLr9xIY7X8oPjaNE9Lvq4RX_7Iez3z8dfvpOGKLrknF_g35Kr57btf-yCcsO-VLdZSCKyZVBax7ffu-CRM5D7rT6Wp7SXONK6lZ36Hfd3w"
   }
 ];
@@ -69,9 +69,9 @@ export default function CheckoutPage() {
 
       {/* Tiêu đề trang Checkout */}
       <div className="mb-12 lg:mb-20">
-        <h1 className="font-headline text-4xl md:text-7xl font-extrabold tracking-tighter uppercase text-black">Checkout</h1>
+        <h1 className="font-headline text-4xl md:text-7xl font-extrabold tracking-tighter uppercase text-black">Thanh Toán</h1>
         <p className="font-body text-stone-500 mt-4 uppercase tracking-widest text-xs flex items-center gap-2">
-          <Lock size={12} /> Secure Transaction Portal
+          <Lock size={12} /> Cổng Giao Dịch An Toàn
         </p>
       </div>
 
@@ -85,46 +85,46 @@ export default function CheckoutPage() {
           <section>
             <div className="flex items-center space-x-4 mb-10">
               <span className="font-headline text-2xl font-black text-black">01</span>
-              <h2 className="font-headline text-xl lg:text-2xl font-bold uppercase tracking-tight text-black">Shipping Address</h2>
+              <h2 className="font-headline text-xl lg:text-2xl font-bold uppercase tracking-tight text-black">Địa Chỉ Nhận Hàng</h2>
             </div>
 
             {/* form nhập địa chỉ 2 cột */}
             <form className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="md:col-span-1">
-                <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">First Name</label>
+                <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">Tên</label>
                 <input
                   type="text"
                   name="firstName"
                   value={shippingForm.firstName}
                   onChange={handleShippingChange}
-                  placeholder="e.g. Julian"
+                  placeholder="VD: Tuấn"
                   className="w-full bg-transparent border-b border-stone-300 focus:border-black border-t-0 border-l-0 border-r-0 px-0 py-3 transition-colors focus:ring-0 outline-none placeholder:text-stone-300 text-black"
                 />
               </div>
               <div className="md:col-span-1">
-                <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">Last Name</label>
+                <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">Họ</label>
                 <input
                   type="text"
                   name="lastName"
                   value={shippingForm.lastName}
                   onChange={handleShippingChange}
-                  placeholder="e.g. Thorne"
+                  placeholder="VD: Nguyễn"
                   className="w-full bg-transparent border-b border-stone-300 focus:border-black border-t-0 border-l-0 border-r-0 px-0 py-3 transition-colors focus:ring-0 outline-none placeholder:text-stone-300 text-black"
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">Address</label>
+                <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">Địa chỉ</label>
                 <input
                   type="text"
                   name="address"
                   value={shippingForm.address}
                   onChange={handleShippingChange}
-                  placeholder="Street name and number"
+                  placeholder="Số nhà, tên đường"
                   className="w-full bg-transparent border-b border-stone-300 focus:border-black border-t-0 border-l-0 border-r-0 px-0 py-3 transition-colors focus:ring-0 outline-none placeholder:text-stone-300 text-black"
                 />
               </div>
               <div className="md:col-span-1">
-                <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">City</label>
+                <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">Thành phố</label>
                 <input
                   type="text"
                   name="city"
@@ -134,7 +134,7 @@ export default function CheckoutPage() {
                 />
               </div>
               <div className="md:col-span-1">
-                <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">Postal Code</label>
+                <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">Mã bưu điện</label>
                 <input
                   type="text"
                   name="postalCode"
@@ -150,7 +150,7 @@ export default function CheckoutPage() {
           <section>
             <div className="flex items-center space-x-4 mb-10">
               <span className="font-headline text-2xl font-black text-black">02</span>
-              <h2 className="font-headline text-xl lg:text-2xl font-bold uppercase tracking-tight text-black">Payment Details</h2>
+              <h2 className="font-headline text-xl lg:text-2xl font-bold uppercase tracking-tight text-black">Thông Tin Thanh Toán</h2>
             </div>
 
             {/* 3 nút chọn phương thức thanh toán */}
@@ -182,7 +182,7 @@ export default function CheckoutPage() {
             {selectedPayment === "Sepay" && (
               <div className="py-8 px-4 text-center border border-dashed border-stone-300">
                 <p className="font-body text-sm text-stone-500">
-                  Sepay QR integration — coming soon. (Chức năng này đang bảo trì)
+                  Tích hợp mã QR Sepay — Ra mắt sớm. (Chức năng này đang bảo trì)
                 </p>
               </div>
             )}
@@ -194,7 +194,7 @@ export default function CheckoutPage() {
               onClick={handleConfirm}
               className="w-full md:w-auto bg-black text-white px-16 py-6 font-headline font-bold uppercase tracking-[0.2em] text-sm hover:bg-stone-800 transition-all active:scale-95"
             >
-              Confirm Purchase
+              Xác Nhận Đặt Hàng
             </button>
             <p className="text-stone-500 text-[10px] mt-4 font-body">
               Bằng cách đặt hàng, bạn đồng ý với Điều khoản Dịch vụ và Chính sách Bảo mật của NMen.
@@ -205,7 +205,7 @@ export default function CheckoutPage() {
         {/* CỘT PHẢI: TÓM TẮT ĐƠN HÀNG (STICKY) */}
         <div className="lg:col-span-5">
           <div className="sticky top-28 bg-stone-100 p-6 lg:p-10">
-            <h2 className="font-headline text-xl font-bold uppercase tracking-tight mb-10 text-black">Order Summary</h2>
+            <h2 className="font-headline text-xl font-bold uppercase tracking-tight mb-10 text-black">Tóm Tắt Đơn Hàng</h2>
 
             {/* Danh sách hàng hóa */}
             <div className="space-y-8 mb-12">
@@ -222,7 +222,7 @@ export default function CheckoutPage() {
                       </p>
                     </div>
                     <span className="font-headline font-bold text-sm text-black">
-                      ${item.price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      {item.price.toLocaleString("vi-VN")} đ
                     </span>
                   </div>
                 </div>
@@ -236,11 +236,11 @@ export default function CheckoutPage() {
                   type="text"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
-                  placeholder="Promo Code"
+                  placeholder="Mã Giảm Giá"
                   className="flex-1 bg-transparent border-b border-stone-400 focus:border-black px-0 py-2 transition-colors focus:ring-0 outline-none font-label text-xs uppercase placeholder:text-stone-400 text-black"
                 />
                 <button className="font-label text-[10px] uppercase font-bold hover:text-stone-500 transition-colors text-black">
-                  Apply
+                  Áp Dụng
                 </button>
               </div>
             </div>
@@ -248,23 +248,23 @@ export default function CheckoutPage() {
             {/* Bảng tính tiền */}
             <div className="space-y-4 pt-8 border-t border-stone-300">
               <div className="flex justify-between font-label text-[10px] uppercase tracking-widest text-stone-500">
-                <span>Subtotal</span>
-                <span className="text-black">${subtotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <span>Cộng gộp</span>
+                <span className="text-black">{subtotal.toLocaleString("vi-VN")} đ</span>
               </div>
               <div className="flex justify-between font-label text-[10px] uppercase tracking-widest text-stone-500">
-                <span>Shipping</span>
-                <span className="font-bold text-black">Complimentary</span>
+                <span>Giao hàng</span>
+                <span className="font-bold text-black">Miễn phí</span>
               </div>
               <div className="flex justify-between font-headline text-xl font-black uppercase pt-4 border-t border-stone-300 text-black">
-                <span>Total</span>
-                <span>${total.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <span>Tổng Cộng</span>
+                <span>{total.toLocaleString("vi-VN")} đ</span>
               </div>
             </div>
 
             {/* Link quay lại giỏ hàng */}
             <div className="mt-8 text-center">
               <Link href="/cart" className="font-label text-[10px] uppercase tracking-widest text-stone-500 hover:text-black underline underline-offset-4 transition-colors">
-                ← Edit Cart
+                ← Chỉnh sửa giỏ hàng
               </Link>
             </div>
           </div>

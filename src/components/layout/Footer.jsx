@@ -1,15 +1,15 @@
 import Link from "next/link";
 
 const shopLinks = [
-  { label: "New Arrivals", href: "/new-arrivals" },
-  { label: "Suits", href: "/suits" },
-  { label: "Accessories", href: "/accessories" },
+  { label: "Hàng mới về", href: "/clothing" },
+  { label: "Bộ Suit", href: "/clothing" },
+  { label: "Phụ kiện", href: "/clothing" },
 ];
 
 const assistanceLinks = [
-  { label: "FAQs", href: "/faqs" },
-  { label: "Shipping", href: "/shipping" },
-  { label: "Terms", href: "/terms" },
+  { label: "Hỏi đáp (FAQs)", href: "/faqs" },
+  { label: "Vận chuyển", href: "/shipping" },
+  { label: "Điều khoản", href: "/terms" },
 ];
 
 const connectLinks = [
@@ -36,14 +36,14 @@ export default function Footer() {
             NMen
           </div>
           <p className="font-body text-xs uppercase tracking-widest leading-loose text-stone-500 max-w-[200px]">
-            Crafting the modern monolith since 2024.
+            Định hình phong cách hiện đại từ 2024.
           </p>
         </div>
 
         {/* Col 2: Shop */}
         <div className="col-span-1 flex flex-col space-y-4">
           <span className="font-body text-xs uppercase tracking-widest font-bold text-black">
-            Shop
+            Cửa hàng
           </span>
           {shopLinks.map((link) => (
             <Link
@@ -59,7 +59,7 @@ export default function Footer() {
         {/* Col 3: Assistance */}
         <div className="col-span-1 flex flex-col space-y-4">
           <span className="font-body text-xs uppercase tracking-widest font-bold text-black">
-            Assistance
+            Hỗ trợ
           </span>
           {assistanceLinks.map((link) => (
             <Link
@@ -75,7 +75,7 @@ export default function Footer() {
         {/* Col 4: Connect / Social */}
         <div className="col-span-2 md:col-span-1 flex flex-col space-y-4">
           <span className="font-body text-xs uppercase tracking-widest font-bold text-black">
-            Connect
+            Kết nối
           </span>
           <div className="flex space-x-6">
             {connectLinks.map((link) => (
@@ -97,14 +97,14 @@ export default function Footer() {
           Design spec: mt-24 px-12, copyright left / locale right */}
       <div className="mt-16 md:mt-24 px-6 md:px-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-t border-stone-200 pt-8 max-w-screen-2xl mx-auto">
         <p className="font-body text-xs uppercase tracking-widest leading-loose text-stone-400">
-          © {new Date().getFullYear()} NMen. All Rights Reserved.
+          © {new Date().getFullYear()} NMen. Bản quyền thuộc về NMen.
         </p>
         <div className="flex space-x-8">
           <span className="font-label text-[10px] uppercase tracking-widest text-stone-400">
-            Global Edition
+            Phiên Bản Toàn Cầu
           </span>
           <span className="font-label text-[10px] uppercase tracking-widest text-stone-400">
-            EN / USD
+            VN / VND
           </span>
         </div>
       </div>
