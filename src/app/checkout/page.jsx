@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 
-// 1. Dữ liệu cứng - giả lập đơn hàng đang checkout (sinh viên dùng cách này cho nhanh)
+// 1. Dữ liệu cứng - giả lập đơn hàng đang checkout
 const ORDER_ITEMS = [
   {
     id: "o1",

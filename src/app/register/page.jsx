@@ -35,7 +35,7 @@ export default function RegisterPage() {
       return;
     }
     console.log("Dữ liệu đăng ký:", formData);
-    alert(`Đăng ký tài khoản hệ thống Sinh viên cho anh/chị "${formData.fullName}" thành công! \nNhấn OK để đóng Pop-up.`);
+    alert(`Đăng ký tài khoản hệ thống cho anh/chị "${formData.fullName}" thành công! \nNhấn OK để đóng Pop-up.`);
   };
 
   return (

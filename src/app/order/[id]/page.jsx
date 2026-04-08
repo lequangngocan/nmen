@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, Check, Truck, Box, PackageCheck, Headset } from "lucide-react";
 
-// Dữ liệu tĩnh MOCK cho 1 Đơn hàng chuẩn sinh viên
+// Dữ liệu tĩnh MOCK cho 1 Đơn hàng
 const MOCK_ORDER = {
   placedOn: "24/10/2023",
   status: "Đang giao",

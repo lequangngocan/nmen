@@ -35,7 +35,7 @@ export default function CartPage() {
 
   // Hàm xoá sản phẩm
   const removeItem = (id) => {
-    // sinh viên dùng filter để giữ lại các món không trùng ID xoá
+    // dùng filter để giữ lại các món không trùng ID xoá
     const newCart = cartItems.filter((item) => item.id !== id);
     setCartItems(newCart);
   };

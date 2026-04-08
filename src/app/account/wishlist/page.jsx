@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { X } from "lucide-react";
 
-// Dữ liệu giả lập 4 món hàng sinh viên yêu thích lưu
+// Dữ liệu giả lập 4 món hàng yêu thích
 const MOCK_WISHLIST = [
   {
     id: "w1",
