@@ -26,6 +26,7 @@ Trước khi bắt đầu, hãy đảm bảo máy bạn đã cài:
 | MySQL | 8.0+ | https://www.mysql.com |
 | Git | Bất kỳ | https://git-scm.com |
 
+> [!NOTE]
 > **Kiểm tra nhanh:** Mở terminal và chạy `node -v`, `mysql --version` để xác nhận.
 
 ---
@@ -84,6 +85,7 @@ Tạo file `.env.local` ở thư mục gốc:
 echo "NEXT_PUBLIC_API_URL=http://localhost:5000" > .env.local
 ```
 
+> [!WARNING]
 > Nếu bạn đổi port backend, hãy cập nhật giá trị `NEXT_PUBLIC_API_URL` cho khớp.
 
 ---
@@ -101,7 +103,8 @@ echo "NEXT_PUBLIC_API_URL=http://localhost:5000" > .env.local
 mysql -u root -p < nmen.sql
 ```
 
-> Nhập mật khẩu MySQL khi được hỏi. Nếu `root` không có mật khẩu, dùng: `mysql -u root < nmen.sql`
+> [!NOTE]
+> Nhập mật khẩu MySQL khi được hỏi. Nếu `root` không có mật khẩu, dùng lệnh: `mysql -u root < nmen.sql`
 
 Lệnh này sẽ tự động tạo database `nmen` với đầy đủ bảng và dữ liệu mẫu.
 
@@ -172,7 +175,8 @@ Sau khi import database, có thể đăng nhập bằng tài khoản admin mặc
 |---|---|---|
 | Admin | `admin@nmen.vn` | `123456` |
 
-> ⚠️ Hãy đổi mật khẩu admin sau khi đăng nhập lần đầu.
+> [!WARNING]
+> Hãy đổi mật khẩu admin sau khi đăng nhập lần đầu.
 
 ---
 
