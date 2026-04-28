@@ -9,7 +9,7 @@ const shopLinks = [
 const assistanceLinks = [
   { label: "Hỏi đáp (FAQs)", href: "/pages/faq" },
   { label: "Vận chuyển", href: "/pages/van-chuyen" },
-  { label: "Điều khoản", href: "/pages/dieu-khoan" },
+  { label: "Điều khoản", href: "/pages/dieu-khoan-dich-vu" },
 ];
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
