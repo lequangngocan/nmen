@@ -11,12 +11,12 @@ export default function AccountLayout({ children }) {
   const isActive = (path) => pathname === path;
 
   return (
-    <div className="pt-24 lg:pt-32 min-h-screen bg-stone-50 px-6 lg:px-12 pb-24 text-black">
-      <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-x-12 mt-12">
+    <div className="pt-6 lg:pt-20 min-h-screen bg-stone-50 px-6 lg:px-12 pb-24 text-black">
+      <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-x-12 mt-4 lg:mt-12">
         
         {/* CỘT TRÁI: SIDEBAR NAVIGATION DÙNG CHUNG CHO MỌI TAB TRONG ACCOUNT */}
-        <aside className="lg:col-span-3 mb-12 lg:mb-0">
-          <div className="sticky top-32 space-y-8">
+        <aside className="lg:col-span-3 mb-8 lg:mb-0">
+          <div className="sticky top-32 space-y-6 lg:space-y-8">
             <h2 className="font-headline text-xs font-black tracking-widest uppercase text-stone-400">Tài Khoản</h2>
             
             <nav className="flex flex-col gap-4">

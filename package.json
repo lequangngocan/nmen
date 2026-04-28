@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:server": "npm run dev --prefix server",
+    "dev:all": "concurrently -n \"client,server\" -c \"cyan,yellow\" \"npm run dev\" \"npm run dev:server\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -16,6 +18,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "tailwindcss": "^4"

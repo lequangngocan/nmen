@@ -8,8 +8,8 @@ export const ADMIN_PRODUCTS = [
     category: "Áo khoác",
     price: 4500000,
     description: "Blazer linen cao cấp, form rộng thoáng mát phù hợp mùa hè.",
-    image1: "https://lh3.googleusercontent.com/aida-public/AB6AXuAHJQ_MprZCrF5knXFgawHxt_aHOhQHlEnkpA9R_SNfsfVTbioJ3KVnn3L7G6_jACNwBfKFiX3Py8z4br29wSvy-l8miujfme3WVibYlsk12DkmiCY4FcpKX_6V-qvcnH5Lu5ObkcP3LExuvQXq6bf1EpHpnM7To7osBJQ0MjvpveMeF9NIiPhqB5WV4DyMVbL-y8BEaLqHu9n2HS-vP-YgM7g61LRaTnNja-PSMqYeI234IFGnjdvZwxH0ilKh2_BdEW3d427Qkg",
-    image2: "https://lh3.googleusercontent.com/aida-public/AB6AXuAj_N-5RErndg0UpjTmJQSJGZMILTxTqmAk6pzHHG9b4KZcl0LFaJb1wXBvee-ueqkjDnQ0-53AagrqS_jinnIm9SyBgSQpgUDskWQJzmnbDfN2yFHEb-iwM2ZDLoR89xTuGSZ6ue-o2Rj42K71RHkgskFTujq7A9bHmO4GRtXzUnAN_DYINkEyl8KIbopbsPrztI_bgaVtOSO2Chu8ItbJm19gImYHs3O7DyUfcgbC1U6NKGkx9cLZgGEGGF630bYNk_yweYrFWQ",
+    image1: "/images/img_0157ad84.jpg",
+    image2: "/images/img_61023194.jpg",
     // Danh sách màu sắc
     colors: [
       { hex: "#2f2f2f", name: "Xám Đen" },
@@ -35,8 +35,8 @@ export const ADMIN_PRODUCTS = [
     category: "Áo sơ mi",
     price: 1850000,
     description: "Sơ mi form rộng unisex, chất liệu poplin mềm mỏng.",
-    image1: "https://lh3.googleusercontent.com/aida-public/AB6AXuBTBQRhw8pq-oM3lkrVGKUzOp_EQ21ZUYKVW5cD_w-79zXiK2FEdVm_wuAAlAMzK3IXVEER34SsGxUbSFUziSkQo6ZgvVqdRqiWV6Tk7Zj0JDxEOvFvaPLgINUaLPKCdfigPwvrQCZChOJZFzEuJNESvu5ATWNtPUBaKv0rFCp9GppHiCG3z8eaxPH0_H14CZM-fx34lSB5yIh8RTVjiuqMTDV_Ws2K93u5rkl-_qLco1pANx48rF3trFlpC0qUSCHRIXPShy3QqA",
-    image2: "https://lh3.googleusercontent.com/aida-public/AB6AXuDIlqs9CtM2XQ_tocm13tqCSDq860-kMx1S0rXzXQhPAMEP-OqFWZatZdrytjLWJ3vUH0yhROMafL7fqVQCZjA39878KCgDL64Y8g7pqvGcbQdYrQkJN7v2EtJHpBPEUxBBvzT7aaglYmskhw27AoAxz9nbu2dfh1JMz1KgNzBWCYnxlytuHH6rAk-BYKskMaql9PUfkIIjyf8T41mik3pxdYGEXP7V-5_9NlnkOBMb5XYXlPF-DIEETZREsI_O4ImI8PW6ca1hhg",
+    image1: "/images/img_7348f528.jpg",
+    image2: "/images/img_6a6a622f.jpg",
     colors: [
       { hex: "#1a1c1c", name: "Đen Nhám" },
       { hex: "#f5f0e8", name: "Trắng Kem" },
@@ -67,8 +67,8 @@ export const ADMIN_PRODUCTS = [
     category: "Quần",
     price: 2200000,
     description: "Quần khaki chino 5 túi, chất liệu cotton pha elastane.",
-    image1: "https://lh3.googleusercontent.com/aida-public/AB6AXuCGQfTBguY6FX1muwB_ShxqBGDWoD6Gh_mtUV27qQtM7I84aJeBy4mv4c2nPL-aRAMqVEmjFqaMb5RdZnq5YUI8za5Uzm8b7jdI9-A1rnD5OV-q73uFvo5hopLVpTDdcwJuWqWApf9rXYAxaF5Iv8quiI1In7W2F0t99t338NuNJNeegJJ9P67KlKMOKNGCqva_CiTEOgKpK1bIGDc66yrxHENXnKBPlYXbdJ7j4t0K8ekxe1QhVGKJMwnU0gaWgSQpHOebhOJXSg",
-    image2: "https://lh3.googleusercontent.com/aida-public/AB6AXuDA0Rcg28TdsARYgHn_FMg1g9fBQhj2I7YjONuysJjuEGvcAevBU4HBrwk00SgpiYbLYsj35UEiWdhheaC0yqatrRVHahBuU7fxsLlyX2Mtc4fxetXwU8fIiIlznPQ95wQ3Of6Vk3CvBN5XL8VArX1jFX_HH062z87OBG8njUuCjuCkR9TcFLKlsx3rBKR5RBSvuM9Y3Us5J4ifG1S0m8XxADsGE-PHcJ0Ml9Ew6m0SqKGlYODcvNyMVe3S02e-gbqfgneHHOZHnA",
+    image1: "/images/img_87c1233f.jpg",
+    image2: "/images/img_0e5ef52b.jpg",
     colors: [
       { hex: "#c8b89a", name: "Be Đất" },
       { hex: "#3d3d3d", name: "Xám Than" },
@@ -93,8 +93,8 @@ export const ADMIN_PRODUCTS = [
     category: "Giày",
     price: 3900000,
     description: "Loafer da bò thật, đế cao su, thích hợp đi công sở.",
-    image1: "https://lh3.googleusercontent.com/aida-public/AB6AXuAQakHJ72TgOOgO4qZtozR0oqK1pzUKxg62BNar58gM-GLfADnxdZzGdrC6Mnh6ODL1xgO7RMN_hgMgW_am1oKu9XZ1RdgU8FEkmui5V7qU0EpcAkAl_LGw-wDSd2QnLkBAkEoZgUBEr3Y5cFuRqu4Pvzu8oEIWxzehI2K-exJBDiUZuLizpO7_0Fo793hJefcEvpuSZew4s-OjxN01W5OJcYEDLAKNgHpmiVQNQZKkZYPuoEwAKlQwd43ZTeTlwVQUw20a0dLLTQ",
-    image2: "https://lh3.googleusercontent.com/aida-public/AB6AXuDk2ooaAsTzTVIeAzM1gIADxfKHKfqITaszrmsG2nqeyLQUNCjQtVqOyUgAY0xg0asRCCKqiCF3yk0c7vGVUiwsjyE4tlT085jHZxBMBrLbaI9GgIIBl6BGnM_I-4ssPtTKCfGivZ6_rDk8Iziz8oWQUSa95I2Jc5C_CHbyGAXhZ4syWZGvV5OvLJCyJo7HUrmmx7rc28GNlyfOIy_7LLBR9-grQ5X2df-kb8lHYrDwRLWm129RlLmacnsBCdJXPv-R4dsHv7txtQ",
+    image1: "/images/img_58b90532.jpg",
+    image2: "/images/img_74203803.jpg",
     colors: [
       { hex: "#1a1c1c", name: "Đen" },
       { hex: "#4a3728", name: "Nâu" },
@@ -121,8 +121,8 @@ export const ADMIN_PRODUCTS = [
     category: "Áo len",
     price: 2800000,
     description: "Áo len cổ tròn dệt dày, giữ ấm tốt cho mùa đông.",
-    image1: "https://lh3.googleusercontent.com/aida-public/AB6AXuAvMfzGXSv2MoPKdK1yXYX4Vg5fIVVU86ghyvCEyUdthclDO_cx3MnfzMMjA46bDgQQTnUr0yBTDIr4ICWV2W4VxILczrKZzHG3J2pUDVwEmFKasT_t6YO_yqWo2V0hG_eprPd0ejhbENYqhgjrXAUOPwmdmp0_9G1GCLr9xIY7X8oPjaNE9Lvq4RX_7Iez3z8dfvpOGKLrknF_g35Kr57btf-yCcsO-VLdZSCKyZVBax7ffu-CRM5D7rT6Wp7SXONK6lZ36Hfd3w",
-    image2: "https://lh3.googleusercontent.com/aida-public/AB6AXuAvMfzGXSv2MoPKdK1yXYX4Vg5fIVVU86ghyvCEyUdthclDO_cx3MnfzMMjA46bDgQQTnUr0yBTDIr4ICWV2W4VxILczrKZzHG3J2pUDVwEmFKasT_t6YO_yqWo2V0hG_eprPd0ejhbENYqhgjrXAUOPwmdmp0_9G1GCLr9xIY7X8oPjaNE9Lvq4RX_7Iez3z8dfvpOGKLrknF_g35Kr57btf-yCcsO-VLdZSCKyZVBax7ffu-CRM5D7rT6Wp7SXONK6lZ36Hfd3w",
+    image1: "/images/img_678c6f7e.jpg",
+    image2: "/images/img_678c6f7e.jpg",
     colors: [
       { hex: "#3d3d3d", name: "Anthracite" },
       { hex: "#1a1c1c", name: "Đen" },
@@ -150,8 +150,8 @@ export const ADMIN_PRODUCTS = [
     category: "Áo khoác",
     price: 12500000,
     description: "Áo khoác dạ cao cấp dáng dài, lót trong ấm, form cổ điển.",
-    image1: "https://lh3.googleusercontent.com/aida-public/AB6AXuBIgWSo99t60vzmiIar2kgc035z7WZOvVDPmfhiUZvde2MEBO8VEYHU9sX-_iezlqwHZd_Ku_BW3BoWzKLQqcWwIOpFtja3jF0-2szYG8n7EvYvtiko4-A9xLqDaSU9egjbCnUvH10b0ucG0liWDnaToE6fotP9gY47UNwsJoTKHJdE0n429OhFQQArTfuE2Cv5-dAJXuukRfbDkx9nIV0Kl22b9CWNq6bvMKNthsnmnlfUWgkMIcDcK7LZ2eHG7-n1C5NoGoigIw",
-    image2: "https://lh3.googleusercontent.com/aida-public/AB6AXuBIgWSo99t60vzmiIar2kgc035z7WZOvVDPmfhiUZvde2MEBO8VEYHU9sX-_iezlqwHZd_Ku_BW3BoWzKLQqcWwIOpFtja3jF0-2szYG8n7EvYvtiko4-A9xLqDaSU9egjbCnUvH10b0ucG0liWDnaToE6fotP9gY47UNwsJoTKHJdE0n429OhFQQArTfuE2Cv5-dAJXuukRfbDkx9nIV0Kl22b9CWNq6bvMKNthsnmnlfUWgkMIcDcK7LZ2eHG7-n1C5NoGoigIw",
+    image1: "/images/img_def6a453.jpg",
+    image2: "/images/img_def6a453.jpg",
     colors: [
       { hex: "#1a1c1c", name: "Đen" },
       { hex: "#2f2f2f", name: "Xám Đen" },

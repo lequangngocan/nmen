@@ -1,91 +1,33 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { Plus, Minus, X, CheckCircle2, Package } from "lucide-react";
 import Link from "next/link";
 
-// 1. Dữ liệu cứng (Hardcoded) giả lập giỏ hàng có sẵn 2 món
-const MOCK_CART_DATA = [
-  {
-    id: "c1",
-    name: "Áo khoác dạ dáng dài",
-    articleNo: "88392-102",
-    color: "Xám Đen",
-    size: "50 (M)",
-    price: 12500000,
-    quantity: 1,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBIgWSo99t60vzmiIar2kgc035z7WZOvVDPmfhiUZvde2MEBO8VEYHU9sX-_iezlqwHZd_Ku_BW3BoWzKLQqcWwIOpFtja3jF0-2szYG8n7EvYvtiko4-A9xLqDaSU9egjbCnUvH10b0ucG0liWDnaToE6fotP9gY47UNwsJoTKHJdE0n429OhFQQArTfuE2Cv5-dAJXuukRfbDkx9nIV0Kl22b9CWNq6bvMKNthsnmnlfUWgkMIcDcK7LZ2eHG7-n1C5NoGoigIw"
-  },
-  {
-    id: "c2",
-    name: "Áo sơ mi Poplin",
-    articleNo: "22019-99",
-    color: "Đen nhám",
-    size: "48 (S)",
-    price: 4200000,
-    quantity: 1,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuC70MzAq_M1-VG5sceEaC9bPFVBGGw76uyKxflCsYxK7SX2LG8O5aNJr9254EmRXEe_OOZ_Xb2jGS7Rds6e7zwr0IgPCAokNYZZBzJyhCPEkhhzhpuGnKpiTRih0IEmNMMbgATnxbiw4tM6J-P2EhZOcHEM5YNkLRCuK9ZSjiPyiVRzD8Ova8plVOcjmGWaN_MJi2LeaLhw9g4pcCnnhbNNnTPpxlAgobDLRLCIVGm_Wg_aF4_SefBQWM2pHzYc5WxkdhrOhBGWHw"
-  }
-];
+import { useCart } from "@/context/CartContext";
+import { getFullUrl } from "@/lib/api";
 
 export default function CartPage() {
-  // Biến lưu trữ giỏ hàng, nếu rỗng thì mảng là []
-  const [cartItems, setCartItems] = useState(MOCK_CART_DATA);
+  const { items, removeFromCart, updateQuantity, subtotal, mounted } = useCart();
 
-  // Hàm xoá sản phẩm
-  const removeItem = (id) => {
-    // dùng filter để giữ lại các món không trùng ID xoá
-    const newCart = cartItems.filter((item) => item.id !== id);
-    setCartItems(newCart);
-  };
+  const total = subtotal;
 
-  // Hàm tăng số lượng
-  const increaseQty = (id) => {
-    const updated = cartItems.map((item) => {
-      if (item.id === id) {
-        return { ...item, quantity: item.quantity + 1 };
-      }
-      return item;
-    });
-    setCartItems(updated);
-  };
-
-  // Hàm giảm số lượng
-  const decreaseQty = (id) => {
-    const updated = cartItems.map((item) => {
-      // Dừng ở 1, không cho thành số 0 (nếu bằng 0 thì xoá luôn hoặc chặn ở 1 tuỳ logic)
-      if (item.id === id && item.quantity > 1) {
-        return { ...item, quantity: item.quantity - 1 };
-      }
-      return item;
-    });
-    setCartItems(updated);
-  };
-
-  // 2. Các hàm tính tiền
-  // Tính tổng phụ (giá x số lượng cộng dồn) bằng reduce của Array (kinh điển)
-  const subtotal = cartItems.reduce(
-    (total, currentItem) => total + currentItem.price * currentItem.quantity,
-    0
-  );
-
-  // Thuế nháp: 8% VAT
-  const tax = subtotal * 0.08;
-  const total = subtotal + tax;
+  if (!mounted) {
+    return <div className="min-h-screen bg-surface"></div>;
+  }
 
   return (
-    <div className="pt-4 lg:pt-8 pb-24 px-12 max-w-[1440px] mx-auto min-h-screen">
+    <div className="pt-4 lg:pt-8 pb-24 px-6 lg:px-12 max-w-[1440px] mx-auto min-h-screen">
       
       {/* Khung tiêu đề đầu trang */}
       <header className="mb-12 lg:mb-20">
         <h1 className="font-headline text-3xl lg:text-5xl font-extrabold tracking-tighter uppercase mb-4">Giỏ hàng của bạn</h1>
         <p className="font-body text-sm text-stone-500 uppercase tracking-widest text-black">
-          {cartItems.length} sản phẩm trong giỏ
+          {items.length} sản phẩm trong giỏ
         </p>
       </header>
 
-      {cartItems.length === 0 ? (
+      {items.length === 0 ? (
         <div className="text-center py-20 bg-stone-100">
           <p className="font-body text-lg mb-6 text-black">Giỏ hàng của bạn đang trống.</p>
           <Link href="/clothing" className="inline-block px-8 py-4 bg-black text-white font-bold uppercase text-sm tracking-widest hover:bg-stone-800 transition">
@@ -97,16 +39,18 @@ export default function CartPage() {
           
           {/* CỘT TRÁI: DANH SÁCH MÓN HÀNG */}
           <section className="col-span-1 lg:col-span-8">
-            {cartItems.map((item) => (
+            {items.map((item, idx) => (
               <article key={item.id} className="flex flex-col sm:flex-row gap-8 mb-12 sm:mb-16 pb-12 sm:pb-16 relative border-b border-stone-200 last:border-b-0">
                 
                 {/* Khu vực ảnh */}
                 <div className="w-full sm:w-48 aspect-3/4 bg-stone-100 overflow-hidden shrink-0 relative">
                   <Image 
-                    src={item.image} 
-                    alt={item.name} 
+                    src={getFullUrl(item.image)} 
+                    alt={item.product_name} 
                     fill 
                     className="object-cover grayscale" 
+                    unoptimized
+                    priority={idx === 0}
                   />
                 </div>
                 
@@ -114,18 +58,22 @@ export default function CartPage() {
                 <div className="flex flex-col justify-between w-full">
                   <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-0">
                     <div>
-                      <h2 className="font-headline text-xl font-bold tracking-tight uppercase mb-1 text-black">{item.name}</h2>
-                      <p className="font-label text-xs text-stone-500 uppercase tracking-wider mb-6">Mã SP: {item.articleNo}</p>
+                      <h2 className="font-headline text-xl font-bold tracking-tight uppercase mb-1 text-black">{item.product_name}</h2>
+                      <p className="font-label text-xs text-stone-500 uppercase tracking-wider mb-6">Mã SP: {item.product_id}</p>
                       
                       <div className="space-y-2">
-                        <div className="flex gap-4">
-                          <span className="font-label text-[10px] text-stone-500 uppercase tracking-widest w-12">Màu:</span>
-                          <span className="font-body text-sm uppercase text-black">{item.color}</span>
-                        </div>
-                        <div className="flex gap-4">
-                          <span className="font-label text-[10px] text-stone-500 uppercase tracking-widest w-12">Size:</span>
-                          <span className="font-body text-sm uppercase text-black">{item.size}</span>
-                        </div>
+                        {item.color && (
+                          <div className="flex gap-4">
+                            <span className="font-label text-[10px] text-stone-500 uppercase tracking-widest w-12">Màu:</span>
+                            <div className="w-4 h-4 rounded-full border border-stone-300" style={{ backgroundColor: item.color }}></div>
+                          </div>
+                        )}
+                        {item.size && (
+                          <div className="flex gap-4">
+                            <span className="font-label text-[10px] text-stone-500 uppercase tracking-widest w-12">Size:</span>
+                            <span className="font-body text-sm uppercase text-black">{item.size}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                     
@@ -137,16 +85,16 @@ export default function CartPage() {
                   {/* Cụm Tăng/Giảm/Xóa phía dưới */}
                   <div className="flex flex-col sm:flex-row justify-between sm:items-end mt-8 gap-6 sm:gap-0">
                     <div className="flex items-center gap-6 border-b border-stone-300 pb-1 w-max">
-                      <button onClick={() => decreaseQty(item.id)} className="hover:opacity-50 transition-opacity text-black">
+                      <button onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} className="hover:opacity-50 transition-opacity text-black disabled:opacity-30 disabled:cursor-not-allowed">
                         <Minus size={16} />
                       </button>
                       <span className="font-label text-sm font-medium w-4 text-center text-black">{item.quantity}</span>
-                      <button onClick={() => increaseQty(item.id)} className="hover:opacity-50 transition-opacity text-black">
+                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="hover:opacity-50 transition-opacity text-black">
                         <Plus size={16} />
                       </button>
                     </div>
                     
-                    <button onClick={() => removeItem(item.id)} className="font-label text-[10px] uppercase tracking-widest text-stone-500 hover:text-red-600 transition-colors flex items-center gap-2">
+                    <button onClick={() => removeFromCart(item.id)} className="font-label text-[10px] uppercase tracking-widest text-stone-500 hover:text-red-600 transition-colors flex items-center gap-2">
                       <X size={16} /> Xóa
                     </button>
                   </div>
@@ -169,10 +117,7 @@ export default function CartPage() {
                   <span className="font-body text-xs uppercase tracking-widest text-stone-500">Giao hàng</span>
                   <span className="font-label text-xs uppercase tracking-widest text-black font-bold">Miễn phí</span>
                 </div>
-                <div className="flex justify-between items-center text-black">
-                  <span className="font-body text-xs uppercase tracking-widest text-stone-500">Thuế (8%)</span>
-                  <span className="font-label text-sm font-semibold">{tax.toLocaleString("vi-VN")} đ</span>
-                </div>
+
               </div>
               
               <div className="border-t border-stone-200 pt-8 mb-12">
@@ -191,7 +136,7 @@ export default function CartPage() {
               </Link>
               
               <p className="font-body text-[10px] text-stone-500 text-center leading-relaxed">
-                Giá đã bao gồm VAT. Phí giao hàng sẽ được tính toán dựa trên địa chỉ của bạn ở bước kế tiếp.
+                Phí giao hàng sẽ được tính toán dựa trên địa chỉ của bạn ở bước kế tiếp.
               </p>
             </div>
             

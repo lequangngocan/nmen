@@ -7,15 +7,12 @@ const shopLinks = [
 ];
 
 const assistanceLinks = [
-  { label: "Hỏi đáp (FAQs)", href: "/faqs" },
-  { label: "Vận chuyển", href: "/shipping" },
-  { label: "Điều khoản", href: "/terms" },
+  { label: "Hỏi đáp (FAQs)", href: "/pages/faq" },
+  { label: "Vận chuyển", href: "/pages/van-chuyen" },
+  { label: "Điều khoản", href: "/pages/dieu-khoan" },
 ];
 
-const connectLinks = [
-  { label: "Instagram", href: "https://instagram.com" },
-  { label: "Pinterest", href: "https://pinterest.com" },
-];
+const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 /* Design spec from NMen Master Layout Base:
    bg: bg-stone-100
@@ -24,7 +21,11 @@ const connectLinks = [
    Typography: font-body = Work Sans, xs, uppercase, tracking-widest, leading-loose
    Bottom bar: border-t border-stone-200 pt-8, flex justify-between
 */
-export default function Footer() {
+export default function Footer({ settings = {} }) {
+  const connectLinks = [];
+  if (settings.instagram_url) connectLinks.push({ label: "Instagram", href: settings.instagram_url });
+  if (settings.facebook_url) connectLinks.push({ label: "Facebook", href: settings.facebook_url });
+
   return (
     <footer className="w-full pt-16 md:pt-24 pb-12 bg-stone-100">
       {/* Main grid: 4 columns on desktop, stacked on mobile */}
@@ -32,11 +33,21 @@ export default function Footer() {
 
         {/* Col 1: Brand + Tagline */}
         <div className="col-span-2 md:col-span-1">
-          <div className="text-xl font-black text-black mb-5 font-headline tracking-tighter uppercase">
-            NMen
-          </div>
+          {settings.logo_url ? (
+            <div className="mb-5">
+              <img 
+                src={settings.logo_url.startsWith("/uploads") ? `${BASE}${settings.logo_url}` : settings.logo_url} 
+                alt={settings.site_name || "NMen"} 
+                className="h-8 object-contain" 
+              />
+            </div>
+          ) : (
+            <div className="text-xl font-black text-black mb-5 font-headline tracking-tighter uppercase">
+              {settings.site_name || "NMen"}
+            </div>
+          )}
           <p className="font-body text-xs uppercase tracking-widest leading-loose text-stone-500 max-w-[200px]">
-            Định hình phong cách hiện đại từ 2024.
+            {settings.description || "Định hình phong cách hiện đại từ 2024."}
           </p>
         </div>
 
@@ -97,7 +108,7 @@ export default function Footer() {
           Design spec: mt-24 px-12, copyright left / locale right */}
       <div className="mt-16 md:mt-24 px-6 md:px-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-t border-stone-200 pt-8 max-w-screen-2xl mx-auto">
         <p className="font-body text-xs uppercase tracking-widest leading-loose text-stone-400">
-          © {new Date().getFullYear()} NMen. Bản quyền thuộc về NMen.
+          © {new Date().getFullYear()} {settings.site_name || "NMen"}. Bản quyền thuộc về {settings.site_name || "NMen"}.
         </p>
         <div className="flex space-x-8">
           <span className="font-label text-[10px] uppercase tracking-widest text-stone-400">

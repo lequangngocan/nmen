@@ -1,60 +1,56 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import WishlistButton from "@/components/WishlistButton";
 
-/**
- * Product Card Component
- * Refined based on Stitch design tokens and user specifications:
- * - 3:4 aspect ratio for images
- * - Smooth hover transition between image1 and image2
- * - Typography: Inter Semi-bold for name, neutral gray for price
- */
 export default function ProductCard({ product }) {
+  const img1 = product.primary_image || '/placeholder.svg';
+  const img2 = product.hover_image || img1;
+
   return (
-    <Link href={`/product/${product.id}`} className="group cursor-pointer flex flex-col">
-      {/* ── Image Container ────────────────────────────────────────────── */}
-      <div className="relative w-full aspect-3/4 overflow-hidden bg-stone-100">
+    <Link href={`/product/${product.slug}`} className="group cursor-pointer flex flex-col">
+      {/* Image Container */}
+      <div className="relative w-full aspect-[3/4] overflow-hidden bg-stone-100">
         
         {/* Primary Image */}
         <Image
-          src={product.image1}
+          src={img1}
           alt={product.name}
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          unoptimized
           className="object-cover transition-opacity duration-700 ease-in-out group-hover:opacity-0"
         />
         
-        {/* Secondary Image (Hover State) */}
+        {/* Secondary Image (Hover) */}
         <Image
-          src={product.image2}
-          alt={`${product.name} alternate view`}
+          src={img2}
+          alt={product.name}
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          className="object-cover absolute inset-0 opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100 group-hover:scale-105"
+          unoptimized
+          className="object-cover opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100 group-hover:scale-105"
         />
 
-        {/* Favorite Icon inside image, visible on hover */}
-        <div className="absolute top-4 right-4 text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-          <Heart size={20} strokeWidth={1.5} className="hover:fill-black transition-colors" />
-        </div>
+        {/* Wishlist Icon */}
+        <WishlistButton product={product} />
       </div>
 
-      {/* ── Product Info ────────────────────────────────────────────────── */}
+      {/* Product Info */}
       <div className="mt-5 flex flex-col">
-        {/* Category: Small uppercase text */}
         <p className="font-label text-[10px] uppercase tracking-widest text-stone-500 mb-1.5">
           {product.category}
         </p>
-        
-        {/* Name: Inter Semi-bold as requested */}
         <h3 className="font-label font-semibold text-sm text-black tracking-tight line-clamp-1">
           {product.name}
         </h3>
-        
-        {/* Price: Neutral gray */}
-        <p className="font-label text-sm mt-1.5 text-stone-500">
-          {product.price.toLocaleString("vi-VN")} đ
-        </p>
+        <div className="font-label text-sm mt-1.5 flex items-center gap-2">
+          {product.sale_price ? (
+            <>
+              <span className="text-red-600 font-medium">{product.sale_price.toLocaleString("vi-VN")} đ</span>
+              <span className="text-stone-400 line-through text-xs">{product.price.toLocaleString("vi-VN")} đ</span>
+            </>
+          ) : (
+            <span className="text-stone-500">{product.price.toLocaleString("vi-VN")} đ</span>
+          )}
+        </div>
       </div>
     </Link>
   );

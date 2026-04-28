@@ -1,6 +1,9 @@
 
 import { Manrope, Work_Sans, Inter } from "next/font/google";
+import { fetchSiteSettings } from "@/lib/settings";
 import "./globals.css";
+
+const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 /* ─── Root Layout — chỉ setup html/body/fonts ───────────────────────────────
    Header/Footer được đặt ở (client)/layout.jsx
@@ -27,20 +30,33 @@ const inter = Inter({
   weight: ["400", "500", "600"],
 });
 
-export const metadata = {
-  title: {
-    default: "NMen — Modern Men's Fashion",
-    template: "%s | NMen",
-  },
-  description:
-    "Crafting the modern monolith since 2024. Discover premium men's fashion: new arrivals, clothing, and accessories.",
-};
+export async function generateMetadata() {
+  const settings = await fetchSiteSettings();
+  
+  const siteName = settings?.site_name || "NMen";
+  const desc = settings?.description || "Modern Men's Fashion";
+  const favicon = settings?.favicon_url 
+    ? (settings.favicon_url.startsWith("/uploads") ? `${BASE}${settings.favicon_url}` : settings.favicon_url) 
+    : "/favicon.ico";
+
+  return {
+    title: {
+      default: siteName,
+      template: `%s | ${siteName}`,
+    },
+    description: desc,
+    icons: {
+      icon: favicon,
+    },
+  };
+}
 
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
       className={`${manrope.variable} ${workSans.variable} ${inter.variable}`}
+      suppressHydrationWarning
     >
       <body suppressHydrationWarning>
         {children}

@@ -36,7 +36,7 @@ export default function Hero() {
           Grayscale by default, color on hover (editorial surprise effect). */}
       <div className="absolute inset-0 bg-surface-container-low">
         <Image
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwsr3t0qLSZRh5Y5oUpZOK9D5I6rAwoNcV_u0LxqetsvBYghIVTolKhZdn8y7hawqLDbWLUWDPXFQay1ZEv2a4Z4K0ZrFeutFKaTkyFl95EYsy6ptkDjfOPPkB1YDPojUDUzn09PbSFfPlKnWF8YTto7ZZeBYvTkbyPZ7AbmCvre82ms3fE7lwLOsMQAgI-_kxFOWrOIikEwcPqDTjVpGd9VnN_Y-ewcHdBxsyXuWfOl6vHM04wOpnFNBtF40n0VMfwcNxI9m3iw"
+          src="/images/img_11d163a2.jpg"
           alt="Editorial portrait of a male model in a black tailored suit"
           fill
           priority
@@ -67,14 +67,14 @@ export default function Hero() {
 
           {/* Tagline */}
           <p className="font-label text-xs tracking-[0.3em] uppercase mb-4 opacity-70 text-black">
-            Xuân Hè 2024
+            Khơi nguồn cảm hứng mới
           </p>
 
           {/* H1 — design: leading-[0.85], tracking-tighter, UPPERCASE */}
           <h1 className="font-headline font-extrabold tracking-tighter text-black uppercase leading-[0.85] mb-8 text-5xl sm:text-6xl md:text-7xl">
-            BỘ SƯU TẬP
+            TÁI ĐỊNH NGHĨA
             <br />
-            MỚI NHẤT
+            PHONG CÁCH
           </h1>
 
           {/* CTA Button
@@ -83,7 +83,7 @@ export default function Hero() {
               Added border variant hover for stronger "Invert" feel:
               hover:bg-white hover:text-black hover:border-black          */}
           <Link
-            href="/new-arrivals"
+            href="/clothing"
             className={[
               "inline-block",
               // Base — filled black button
@@ -98,7 +98,7 @@ export default function Hero() {
               "transition-all duration-200 active:scale-95",
             ].join(" ")}
           >
-            Khám phá ngay
+            Trải nghiệm ngay
           </Link>
         </div>
       </div>
@@ -110,7 +110,7 @@ export default function Hero() {
           className="font-label text-[10px] uppercase tracking-widest opacity-40 text-black"
           style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
         >
-          NMEN BỘ SƯU TẬP ĐỘC QUYỀN 01
+          NMEN - KHẲNG ĐỊNH BẢN LĨNH PHÁI MẠNH
         </p>
       </div>
     </header>

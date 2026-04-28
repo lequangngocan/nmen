@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function RegisterPage() {
   // State form lưu trữ giá trị nhập vào
@@ -17,6 +19,12 @@ export default function RegisterPage() {
   // State cấu hình Ẩn Hiện Mật khẩu
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [successModal, setSuccessModal] = useState(false); // Modal báo thành công
+
+  const router = useRouter();
+  const { register } = useAuth();
 
   // Xử lý ghi nhận chuỗi gõ vào bàn phím
   const handleInputChange = (e) => {
@@ -27,32 +35,64 @@ export default function RegisterPage() {
     }));
   };
 
-  // Nộp Form giả lập tĩnh
-  const handleSubmit = (e) => {
+  // Nộp Form thực tế gọi API
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Mật khẩu xác nhận không khớp!");
+      setError("Mật khẩu xác nhận không khớp!");
       return;
     }
-    console.log("Dữ liệu đăng ký:", formData);
-    alert(`Đăng ký tài khoản hệ thống cho anh/chị "${formData.fullName}" thành công! \nNhấn OK để đóng Pop-up.`);
+
+    setSubmitting(true);
+    const data = await register(formData.fullName, formData.email, formData.password);
+    setSubmitting(false);
+
+    if (data.token) {
+      // Bật modal báo thành công
+      setSuccessModal(true);
+    } else {
+      setError(data.message || "Đăng ký thất bại");
+    }
   };
 
   return (
-    <div className="bg-stone-50 text-black flex min-h-screen">
+    <>
+      {/* Modal báo đăng ký thành công */}
+      {successModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white p-10 max-w-sm w-full mx-4 text-center shadow-2xl">
+            <h3 className="font-headline text-2xl font-black uppercase tracking-tight text-black mb-4">
+              Tuyệt vời!
+            </h3>
+            <p className="font-body text-sm text-stone-500 mb-8 leading-relaxed">
+              Tài khoản <strong>{formData.fullName}</strong> đã được tạo thành công. Bạn đã sẵn sàng để mua sắm cùng NMen.
+            </p>
+            <button
+              onClick={() => router.push("/login")}
+              className="w-full bg-black text-white font-headline font-bold text-xs uppercase tracking-[0.2em] py-4 hover:bg-stone-800 transition-colors"
+            >
+              Tới Trang Đăng Nhập
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-stone-50 text-black flex min-h-screen">
       
       {/* 🚀 LƯỚI BÊN TRÁI: KHU VỰC HIỂN THỊ HÌNH ẢNH (Chỉ hiện trên PC: lg:flex) */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-stone-200 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_chha0-f4q8hnzX_LGwQemLaKUnRVpR7h950k8YjGUzLVOhaV-8SJsX5ntJkKXNuLxQtL4b7ceDcvcsBjovcjabB1_zEyNfuLP-aTrwP1qGpu5qin4WDspcXF1c5G8rSsFlFVEpiSCvMSxacdeiR1i0Ifv2vEqKKdmWJFjMCIbOQahkLE2TwrpQeqvLQYgpbjIw-c6Kvj0_wfm_uAH3CNjqkVWlRNbJuSlInkB5poTpDSrW6pNpn5KmwUVQSq60L0lGcG1j9QDA"
+            src="/images/img_da65ebc2.jpg"
             alt="Brand Aesthetic"
             fill
             className="object-cover grayscale brightness-90"
             priority
           />
         </div>
-        <div className="relative z-10 p-16 flex flex-col justify-between h-full w-full bg-gradient-to-t from-black/80 to-transparent">
+        <div className="relative z-10 p-16 flex flex-col justify-between h-full w-full bg-linear-to-t from-black/80 to-transparent">
           <div>
             <Link href="/" className="font-headline font-black text-6xl tracking-tighter text-white uppercase leading-none hover:opacity-80 transition-opacity">
               NMen
@@ -159,19 +199,27 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Thông báo lỗi */}
+            {error && (
+              <p className="text-red-600 text-xs font-label tracking-wide text-center -mt-2">
+                {error}
+              </p>
+            )}
+
             {/* Action Buttons & Links */}
             <div className="pt-6 space-y-6">
               <button 
                 type="submit"
-                className="w-full py-5 bg-black text-white font-headline font-bold text-sm uppercase tracking-[0.2em] hover:bg-stone-800 active:scale-[0.98] transition-all duration-300" 
+                disabled={submitting}
+                className="w-full py-5 bg-black text-white font-headline font-bold text-sm uppercase tracking-[0.2em] hover:bg-stone-800 active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" 
               >
-                Đăng Ký Ngay
+                {submitting ? "Đang xử lý..." : "Đăng Ký Ngay"}
               </button>
               
               <div className="flex items-center gap-4 text-stone-300">
-                <div className="flex-grow h-px bg-current"></div>
+                <div className="grow h-px bg-current"></div>
                 <span className="font-label text-[10px] uppercase tracking-widest text-stone-400">hoặc</span>
-                <div className="flex-grow h-px bg-current"></div>
+                <div className="grow h-px bg-current"></div>
               </div>
               
               <div className="flex justify-center">
@@ -194,5 +242,6 @@ export default function RegisterPage() {
       </div>
 
     </div>
+    </>
   );
 }

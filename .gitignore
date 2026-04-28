@@ -46,3 +46,14 @@ next-env.d.ts
 _agents/
 _agent/
 .gemini/
+
+#server
+/server/node_modules
+/server/.env
+/server/.env.local
+/server/api.http
+
+#plans
+/plans/*
+
+./server/public/uploads/*

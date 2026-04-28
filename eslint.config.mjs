@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Backend Express — có ESLint config riêng
+    "server/**",
   ]),
   // Tắt một số rule quá strict không cần thiết cho đồ án
   {

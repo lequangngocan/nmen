@@ -2,32 +2,37 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
-  
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) {
-      alert("Vui lòng điền đầy đủ Email và Mật khẩu!");
-      return;
+    setError("");
+    setSubmitting(true);
+
+    const data = await login(formData.email, formData.password);
+
+    setSubmitting(false);
+
+    if (data.token) {
+      router.push("/");
+    } else {
+      setError(data.message || "Đăng nhập thất bại");
     }
-    console.log("Đăng nhập:", formData);
-    alert(`Chào mừng "${formData.email}" trở lại hệ thống NMen! \nNhấn OK để đóng Pop-up.`);
   };
 
   return (
@@ -115,13 +120,21 @@ export default function LoginPage() {
               </label>
             </div>
 
-            {/* Nút Đăng nhập Nhám Đen */}
+            {/* Thông báo lỗi */}
+            {error && (
+              <p className="text-red-600 text-xs font-label tracking-wide text-center -mt-2">
+                {error}
+              </p>
+            )}
+
+            {/* Nút Đăng nhập */}
             <div className="pt-4">
               <button 
                 type="submit"
-                className="w-full bg-black text-white py-5 font-headline font-bold uppercase text-xs tracking-widest hover:bg-stone-800 transition-all active:scale-[0.98]"
+                disabled={submitting}
+                className="w-full bg-black text-white py-5 font-headline font-bold uppercase text-xs tracking-widest hover:bg-stone-800 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Đăng Nhập Ngay
+                {submitting ? 'Đang đăng nhập...' : 'Đăng Nhập Ngay'}
               </button>
             </div>
           </form>

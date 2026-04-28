@@ -1,313 +1,244 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import { ArrowLeft, Phone, Mail, MapPin, Package, CreditCard, Clock, CheckCircle, XCircle, Truck } from "lucide-react";
-import { ADMIN_ORDERS } from "@/constants/admin-data";
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
+import { apiGet, apiPatch, getFullUrl } from "@/lib/api";
 
-// Cấu hình các bước tiến trình đơn hàng
-const STATUS_STEPS = [
-  { key: "Chờ xác nhận", icon: Clock, label: "Chờ xác nhận" },
-  { key: "Đang giao", icon: Truck, label: "Đang giao" },
-  { key: "Đã giao", icon: CheckCircle, label: "Đã giao" },
-];
+const STATUSES = ["pending", "confirmed", "processing", "shipping", "delivered", "cancelled", "returned"];
 
-// Các trạng thái có thể cập nhật
-const STATUS_OPTIONS = ["Chờ xác nhận", "Đang giao", "Đã giao", "Đã hủy"];
+const STATUS_LABELS = {
+  pending:    "Chờ xác nhận",
+  confirmed:  "Đã xác nhận",
+  processing: "Đang xử lý",
+  shipping:   "Đang giao",
+  delivered:  "Đã giao",
+  cancelled:  "Đã hủy",
+  returned:   "Trả hàng",
+};
+
+const PAYMENT_STATUS_LABELS = {
+  pending:  "Chờ thanh toán",
+  paid:     "Đã thanh toán",
+  failed:   "Lỗi thanh toán",
+  refunded: "Đã hoàn tiền",
+};
 
 function StatusBadge({ status }) {
   const map = {
-    "Chờ xác nhận": "bg-yellow-100 text-yellow-700 border border-yellow-200",
-    "Đang giao":    "bg-blue-100 text-blue-700 border border-blue-200",
-    "Đã giao":      "bg-green-100 text-green-700 border border-green-200",
-    "Đã hủy":       "bg-red-100 text-red-700 border border-red-200",
+    pending:    "bg-yellow-100 text-yellow-700",
+    confirmed:  "bg-sky-100 text-sky-700",
+    processing: "bg-blue-100 text-blue-700",
+    shipping:   "bg-indigo-100 text-indigo-700",
+    delivered:  "bg-stone-200 text-stone-700",
+    cancelled:  "bg-red-100 text-red-700",
+    returned:   "bg-orange-100 text-orange-700",
   };
   return (
-    <span className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm ${map[status] || "bg-stone-100 text-stone-600"}`}>
-      {status}
+    <span className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest ${map[status] || "bg-stone-100 text-stone-600"}`}>
+      {STATUS_LABELS[status] || status}
     </span>
   );
 }
 
-// Timeline tiến trình đơn hàng
-function OrderTimeline({ status }) {
-  if (status === "Đã hủy") {
-    return (
-      <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-sm">
-        <XCircle size={20} className="text-red-500 shrink-0" />
-        <span className="text-sm text-red-700 font-medium">Đơn hàng này đã bị hủy</span>
-      </div>
-    );
-  }
+export default function OrderDetailPage() {
+  const { id } = useParams();
+  const router = useRouter();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [newStatus, setNewStatus] = useState("");
+  const [cancelledReason, setCancelledReason] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState("");
 
-  const currentIdx = STATUS_STEPS.findIndex((s) => s.key === status);
+  useEffect(() => {
+    apiGet(`/api/orders/${id}`)
+      .then((data) => {
+        if (data.id) {
+          setOrder(data);
+          setNewStatus(data.status);
+          setCancelledReason(data.cancelled_reason || "");
+        }
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
 
-  return (
-    <div className="flex items-start gap-0">
-      {STATUS_STEPS.map((step, idx) => {
-        const Icon = step.icon;
-        const isDone = idx <= currentIdx;
-        const isLast = idx === STATUS_STEPS.length - 1;
-
-        return (
-          <div key={step.key} className="flex items-center flex-1">
-            {/* Bước */}
-            <div className="flex flex-col items-center gap-1 shrink-0">
-              <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center border-2 transition-colors ${
-                  isDone
-                    ? "bg-black border-black text-white"
-                    : "bg-white border-stone-300 text-stone-400"
-                }`}
-              >
-                <Icon size={16} />
-              </div>
-              <span className={`text-[10px] font-label uppercase tracking-widest whitespace-nowrap ${isDone ? "text-black font-bold" : "text-stone-400"}`}>
-                {step.label}
-              </span>
-            </div>
-            {/* Đường kẻ nối */}
-            {!isLast && (
-              <div className={`flex-1 h-0.5 mx-2 mb-5 ${idx < currentIdx ? "bg-black" : "bg-stone-200"}`} />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-export default function AdminOrderDetailPage() {
-  const params = useParams();
-  const orderId = params.id;
-  const order = ADMIN_ORDERS.find((o) => o.id === orderId);
-
-  const [currentStatus, setCurrentStatus] = useState(order?.status || "");
-  const [note, setNote] = useState("");
-
-  const handleUpdateStatus = () => {
-    alert(`Đã cập nhật trạng thái: "${currentStatus}" (Demo)`);
+  const handleUpdateStatus = async () => {
+    if (newStatus === order.status) return;
+    setSaving(true);
+    const res = await apiPatch(`/api/orders/${id}/status`, {
+      status: newStatus,
+      cancelled_reason: newStatus === "cancelled" ? cancelledReason : undefined,
+    });
+    setSaving(false);
+    if (res.message === "Cập nhật trạng thái thành công") {
+      setOrder((prev) => ({ ...prev, status: newStatus, cancelled_reason: cancelledReason }));
+      setToast("✅ Đã cập nhật trạng thái");
+      setTimeout(() => setToast(""), 3000);
+    }
   };
 
-  if (!order) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-stone-500 text-lg mb-4">Không tìm thấy đơn hàng #{orderId}.</p>
-        <Link href="/admin/orders" className="text-black underline underline-offset-4 text-sm font-label uppercase tracking-widest">
-          ← Quay lại danh sách
-        </Link>
-      </div>
-    );
-  }
+  if (loading) return <div className="text-stone-400 text-sm py-10 text-center">Đang tải...</div>;
+  if (!order)  return <div className="text-red-500 text-sm py-10 text-center">Không tìm thấy đơn hàng.</div>;
+
+  const shippingFull = [
+    order.shipping_address,
+    order.shipping_commune,
+    order.shipping_province,
+  ].filter(Boolean).join(", ");
 
   return (
     <div>
-      {/* ── Header ── */}
-      <div className="mb-8">
-        <Link
-          href="/admin/orders"
-          className="flex items-center gap-2 text-stone-500 hover:text-black transition-colors text-sm font-label uppercase tracking-widest mb-4"
-        >
-          <ArrowLeft size={16} />
-          Quay lại danh sách
-        </Link>
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <p className="font-label text-[10px] uppercase tracking-widest text-stone-500 mb-1">Mã đơn hàng</p>
-            <h1 className="font-headline text-3xl font-black tracking-tight uppercase text-black">
-              #{order.id}
-            </h1>
-          </div>
-          <div className="flex flex-col items-end gap-2">
-            <StatusBadge status={currentStatus} />
-            <p className="text-stone-400 text-xs">Đặt ngày {order.date}</p>
-          </div>
+      {/* Header */}
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <button onClick={() => router.back()} className="text-xs text-stone-400 hover:text-black uppercase tracking-widest mb-3 transition-colors">
+            ← Quay lại
+          </button>
+          <h1 className="font-headline text-3xl font-black tracking-tight uppercase text-black">
+            Đơn {order.order_number}
+          </h1>
+          <p className="text-stone-500 text-sm mt-1">
+            {new Date(order.created_at).toLocaleString("vi-VN")}
+          </p>
         </div>
+        <StatusBadge status={order.status} />
       </div>
 
-      {/* ── Timeline trạng thái ── */}
-      <div className="bg-white border border-stone-100 shadow-sm p-6 mb-6">
-        <OrderTimeline status={currentStatus} />
-      </div>
-
-      {/* ── Nội dung chính ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {/* Cột trái (2/3): Sản phẩm + Tóm tắt thanh toán */}
+        {/* Thông tin khách */}
         <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white border border-stone-100 shadow-sm p-6">
+            <h2 className="font-headline font-bold uppercase tracking-tight text-black mb-4 text-sm">Thông tin khách hàng</h2>
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+              {[
+                ["Họ tên",       order.customer_name],
+                ["Email",        order.email],
+                ["Điện thoại",   order.phone],
+                ["Địa chỉ",      shippingFull],
+                ["Thanh toán",   order.payment_method],
+                ["TT Thanh toán", PAYMENT_STATUS_LABELS[order.payment_status] || order.payment_status],
+              ].map(([label, val]) => (
+                <div key={label}>
+                  <dt className="text-[10px] font-label uppercase tracking-widest text-stone-400 mb-1">{label}</dt>
+                  <dd className="text-black font-medium">{val || "—"}</dd>
+                </div>
+              ))}
+            </dl>
+            {order.note && (
+              <div className="mt-4 pt-4 border-t border-stone-100">
+                <dt className="text-[10px] font-label uppercase tracking-widest text-stone-400 mb-1">Ghi chú</dt>
+                <dd className="text-black text-sm">{order.note}</dd>
+              </div>
+            )}
+            {order.cancelled_reason && (
+              <div className="mt-4 pt-4 border-t border-red-100 bg-red-50 px-3 py-2 rounded">
+                <dt className="text-[10px] font-label uppercase tracking-widest text-red-400 mb-1">Lý do hủy</dt>
+                <dd className="text-red-700 text-sm">{order.cancelled_reason}</dd>
+              </div>
+            )}
+          </div>
 
-          {/* Danh sách sản phẩm */}
+          {/* Sản phẩm */}
           <div className="bg-white border border-stone-100 shadow-sm">
-            <div className="flex items-center gap-2 p-5 border-b border-stone-100">
-              <Package size={16} className="text-stone-500" />
-              <h2 className="font-headline text-base font-bold uppercase tracking-tight text-black">
-                Sản phẩm ({order.items.length})
-              </h2>
+            <div className="p-6 border-b border-stone-100">
+              <h2 className="font-headline font-bold uppercase tracking-tight text-black text-sm">Sản phẩm ({order.items?.length || 0})</h2>
             </div>
-
             <div className="divide-y divide-stone-50">
-              {order.items.map((item, idx) => (
-                <div key={idx} className="flex items-center gap-4 px-5 py-4">
-                  {/* Icon sản phẩm */}
-                  <div className="w-12 h-16 bg-stone-100 flex items-center justify-center shrink-0">
-                    <Package size={20} className="text-stone-400" />
+              {(order.items || []).map((item, i) => (
+                <div key={i} className="flex gap-4 px-6 py-4 items-start">
+                  {/* Ảnh snapshot */}
+                  <div className="w-16 h-20 bg-stone-100 shrink-0 relative overflow-hidden">
+                    {item.image_url ? (
+                      <Image src={getFullUrl(item.image_url)} alt={item.product_name} fill className="object-cover" unoptimized />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-stone-300 text-xs">N/A</div>
+                    )}
                   </div>
-
-                  {/* Thông tin */}
                   <div className="flex-1 min-w-0">
-                    <p className="font-label font-bold text-black text-sm truncate">{item.name}</p>
-                    <div className="flex gap-3 mt-1">
-                      <span className="font-label text-[10px] uppercase tracking-widest text-stone-500 border border-stone-200 px-2 py-0.5">
-                        Size: {item.size}
+                    <p className="font-medium text-black text-sm truncate">{item.product_name}</p>
+                    <p className="text-xs text-stone-500 mt-0.5">{item.color_name || "—"} / {item.size || "—"}</p>
+                    <p className="text-xs text-stone-400 mt-0.5">Số lượng: {item.quantity}</p>
+                    {/* Giá gốc vs. giá sale */}
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="text-sm font-bold text-black">
+                        {Number(item.unit_price).toLocaleString("vi-VN")} đ
                       </span>
-                      <span className="font-label text-[10px] uppercase tracking-widest text-stone-500">
-                        SL: {item.qty}
-                      </span>
+                      {Number(item.original_price) > Number(item.unit_price) && (
+                        <span className="text-xs text-stone-400 line-through">
+                          {Number(item.original_price).toLocaleString("vi-VN")} đ
+                        </span>
+                      )}
                     </div>
                   </div>
-
-                  {/* Giá */}
-                  <p className="font-label font-bold text-black shrink-0">
-                    {item.price.toLocaleString("vi-VN")} đ
-                  </p>
+                  <div className="text-right shrink-0">
+                    <span className="font-bold text-sm text-black">
+                      {Number(item.line_total || item.unit_price * item.quantity).toLocaleString("vi-VN")} đ
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
-
-            {/* Tổng cộng */}
-            <div className="bg-stone-50 px-5 py-4 border-t border-stone-100">
-              <div className="flex justify-between items-center text-sm text-stone-500 mb-2">
-                <span>Tạm tính</span>
-                <span>{order.total.toLocaleString("vi-VN")} đ</span>
-              </div>
-              <div className="flex justify-between items-center text-sm text-stone-500 mb-3">
-                <span>Phí vận chuyển</span>
-                <span className="text-green-600 font-medium">Miễn phí</span>
-              </div>
-              <div className="flex justify-between items-center font-headline font-black text-black text-lg border-t border-stone-200 pt-3">
-                <span className="uppercase tracking-tight">Tổng cộng</span>
-                <span>{order.total.toLocaleString("vi-VN")} đ</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Thông tin thanh toán */}
-          <div className="bg-white border border-stone-100 shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-4 border-b border-stone-100 pb-3">
-              <CreditCard size={16} className="text-stone-500" />
-              <h2 className="font-headline text-base font-bold uppercase tracking-tight text-black">
-                Thanh toán
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="font-label text-[10px] uppercase tracking-widest text-stone-500 mb-1">Phương thức</p>
-                <p className="font-label font-bold text-black">{order.payment}</p>
-              </div>
-              <div>
-                <p className="font-label text-[10px] uppercase tracking-widest text-stone-500 mb-1">Trạng thái</p>
-                <p className="font-label font-bold text-green-600">Đã thanh toán</p>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* Cột phải (1/3): Khách hàng + Cập nhật */}
+        {/* Sidebar */}
         <div className="space-y-6">
-
-          {/* Thông tin khách hàng */}
-          <div className="bg-white border border-stone-100 shadow-sm p-5">
-            <h2 className="font-headline text-base font-bold uppercase tracking-tight text-black border-b border-stone-100 pb-3 mb-4">
-              Khách hàng
-            </h2>
-
-            <div className="space-y-4">
-              {/* Tên */}
-              <div>
-                <p className="font-label text-[10px] uppercase tracking-widest text-stone-400 mb-1">Họ tên</p>
-                <p className="font-label font-bold text-black">{order.customer}</p>
-              </div>
-
-              {/* Liên hệ */}
-              <div className="space-y-2">
-                <a
-                  href={`mailto:${order.email}`}
-                  className="flex items-center gap-2 text-sm text-stone-600 hover:text-black transition-colors"
-                >
-                  <Mail size={14} className="text-stone-400 shrink-0" />
-                  {order.email}
-                </a>
-                <a
-                  href={`tel:${order.phone}`}
-                  className="flex items-center gap-2 text-sm text-stone-600 hover:text-black transition-colors"
-                >
-                  <Phone size={14} className="text-stone-400 shrink-0" />
-                  {order.phone}
-                </a>
-              </div>
-
-              {/* Địa chỉ */}
-              <div>
-                <p className="font-label text-[10px] uppercase tracking-widest text-stone-400 mb-1">Địa chỉ giao hàng</p>
-                <div className="flex gap-2">
-                  <MapPin size={14} className="text-stone-400 mt-0.5 shrink-0" />
-                  <p className="text-sm text-stone-600 leading-relaxed">{order.address}</p>
+          {/* Tổng đơn */}
+          <div className="bg-white border border-stone-100 shadow-sm p-6">
+            <h2 className="font-headline font-bold uppercase tracking-tight text-black mb-4 text-sm">Tổng đơn hàng</h2>
+            <dl className="space-y-2 text-sm">
+              <div className="flex justify-between"><dt className="text-stone-500">Tạm tính</dt><dd>{Number(order.subtotal).toLocaleString("vi-VN")} đ</dd></div>
+              {Number(order.discount_amount) > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <dt>Giảm giá ({order.promo_code})</dt>
+                  <dd>-{Number(order.discount_amount).toLocaleString("vi-VN")} đ</dd>
                 </div>
+              )}
+              <div className="flex justify-between text-stone-500">
+                <dt>Phí ship</dt>
+                <dd>{Number(order.shipping_fee) === 0 ? "Miễn phí" : Number(order.shipping_fee).toLocaleString("vi-VN") + " đ"}</dd>
               </div>
-            </div>
+              <div className="flex justify-between border-t border-stone-100 pt-2 font-bold">
+                <dt>Tổng cộng</dt>
+                <dd>{Number(order.total_amount).toLocaleString("vi-VN")} đ</dd>
+              </div>
+              <div className="flex justify-between text-stone-400 text-xs">
+                <dt>Điểm tích lũy</dt><dd>+{order.points_earned} điểm</dd>
+              </div>
+            </dl>
           </div>
 
           {/* Cập nhật trạng thái */}
-          <div className="bg-white border border-stone-100 shadow-sm p-5">
-            <h2 className="font-headline text-base font-bold uppercase tracking-tight text-black border-b border-stone-100 pb-3 mb-4">
-              Cập nhật trạng thái
-            </h2>
+          <div className="bg-white border border-stone-100 shadow-sm p-6">
+            <h2 className="font-headline font-bold uppercase tracking-tight text-black mb-4 text-sm">Cập nhật trạng thái</h2>
+            <select
+              value={newStatus}
+              onChange={(e) => setNewStatus(e.target.value)}
+              className="w-full border border-stone-300 bg-white px-3 py-2 text-sm text-black focus:border-black outline-none mb-3"
+            >
+              {STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
+            </select>
 
-            <div className="space-y-2 mb-4">
-              {STATUS_OPTIONS.map((status) => (
-                <label
-                  key={status}
-                  className={`flex items-center gap-3 px-3 py-2 cursor-pointer border transition-colors rounded-sm ${
-                    currentStatus === status
-                      ? "border-black bg-stone-50"
-                      : "border-transparent hover:border-stone-200"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="status"
-                    value={status}
-                    checked={currentStatus === status}
-                    onChange={(e) => setCurrentStatus(e.target.value)}
-                    className="accent-black"
-                  />
-                  <span className="text-sm text-black">{status}</span>
-                </label>
-              ))}
-            </div>
-
-            {/* Ghi chú nội bộ */}
-            <div className="mb-4">
-              <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">
-                Ghi chú nội bộ
-              </label>
+            {/* Lý do hủy — chỉ hiện khi chọn cancelled */}
+            {newStatus === "cancelled" && (
               <textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                rows={3}
-                placeholder="Ghi chú cho nội bộ (khách không thấy)..."
-                className="w-full border border-stone-200 focus:border-black bg-white px-3 py-2 outline-none text-black text-sm resize-none transition-colors"
+                value={cancelledReason}
+                onChange={(e) => setCancelledReason(e.target.value)}
+                placeholder="Lý do hủy đơn (tùy chọn)..."
+                rows={2}
+                className="w-full border border-stone-300 bg-white px-3 py-2 text-sm text-black focus:border-black outline-none mb-3 resize-none"
               />
-            </div>
+            )}
 
             <button
               onClick={handleUpdateStatus}
-              className="w-full bg-black text-white py-3 font-bold uppercase tracking-widest text-sm hover:bg-stone-800 transition-all active:scale-95"
+              disabled={saving || newStatus === order.status}
+              className="w-full bg-black text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-all disabled:opacity-40"
             >
-              Lưu thay đổi
+              {saving ? "Đang lưu..." : "Lưu trạng thái"}
             </button>
+            {toast && <p className="mt-2 text-xs text-green-600 text-center">{toast}</p>}
           </div>
         </div>
       </div>
