@@ -75,7 +75,7 @@ export default function OrderHistoryPage() {
       {orders.length === 0 ? (
         <div className="text-center py-16 bg-stone-50 border border-stone-200">
           <p className="font-body text-stone-500 uppercase tracking-widest text-xs">Bạn chưa có đơn hàng nào.</p>
-          <Link href="/clothing" className="inline-block mt-6 px-6 py-3 bg-black text-white text-[10px] font-bold uppercase tracking-widest hover:bg-stone-800">
+          <Link href="/all" className="inline-block mt-6 px-6 py-3 bg-black text-white text-[10px] font-bold uppercase tracking-widest hover:bg-stone-800">
             Tiếp tục mua sắm
           </Link>
         </div>

@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
 export default function Breadcrumbs({ product, categoryName }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const paths = pathname.split("/").filter((path) => path);
 
   if (product && pathname.startsWith("/product/")) {
@@ -20,14 +19,14 @@ export default function Breadcrumbs({ product, categoryName }) {
           </li>
           <li className="flex items-center gap-2">
             <ChevronRight size={12} className="text-stone-300 shrink-0" />
-            <Link href="/clothing" className="hover:text-black transition-colors whitespace-nowrap">
+            <Link href="/all" className="hover:text-black transition-colors whitespace-nowrap">
               Cửa hàng
             </Link>
           </li>
           {product.category_slug && (
             <li className="flex items-center gap-2">
               <ChevronRight size={12} className="text-stone-300 shrink-0" />
-              <Link href={`/clothing?category=${product.category_slug}`} className="hover:text-black transition-colors whitespace-nowrap">
+              <Link href={`/${product.category_slug}`} className="hover:text-black transition-colors whitespace-nowrap">
                 {product.category_name || product.category_slug.replace(/-/g, " ")}
               </Link>
             </li>
@@ -44,7 +43,7 @@ export default function Breadcrumbs({ product, categoryName }) {
   }
 
   const pathTranslations = {
-    clothing: "Cửa hàng",
+    all: "Cửa hàng",
     product: "Sản phẩm",
     cart: "Giỏ hàng",
     checkout: "Thanh toán",
@@ -63,11 +62,8 @@ export default function Breadcrumbs({ product, categoryName }) {
     };
   });
 
-  if (pathname === "/clothing" && searchParams.get("category")) {
-    breadcrumbs.push({
-      href: `/clothing?category=${searchParams.get("category")}`,
-      label: categoryName || searchParams.get("category").replace(/-/g, " "),
-    });
+  if (categoryName && paths.length === 1 && !pathTranslations[paths[0]]) {
+    breadcrumbs[0].label = categoryName;
   }
 
   if (pathname.startsWith("/product/") && breadcrumbs.length > 1) {

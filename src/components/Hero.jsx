@@ -83,7 +83,7 @@ export default function Hero() {
               Added border variant hover for stronger "Invert" feel:
               hover:bg-white hover:text-black hover:border-black          */}
           <Link
-            href="/clothing"
+            href="/all"
             className={[
               "inline-block",
               // Base — filled black button

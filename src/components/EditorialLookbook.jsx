@@ -56,7 +56,7 @@ export default function EditorialLookbook() {
 
             {/* Nút Xem thêm */}
             <Link 
-              href="/clothing"
+              href="/all"
               className="font-headline text-sm font-bold uppercase tracking-widest text-black underline"
             >
               Xem chi tiết

@@ -287,7 +287,7 @@ export default function ProductDetailPage(props) {
               Gợi ý phối đồ
             </h2>
             <div className="h-px grow mx-12 hidden md:block bg-stone-300"></div>
-            <a className="font-label text-xs uppercase tracking-widest border-b border-black text-black" href="/clothing">
+            <a className="font-label text-xs uppercase tracking-widest border-b border-black text-black" href="/all">
               Xem tất cả
             </a>
           </div>

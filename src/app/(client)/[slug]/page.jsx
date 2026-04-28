@@ -49,11 +49,20 @@ async function fetchCategoryName(slug) {
   }
 }
 
-export default async function ClothingPage({ searchParams }) {
-  // Await searchParams in Next 15+
-  const params = await searchParams;
-  const products = await fetchProducts(params);
-  const categoryName = await fetchCategoryName(params.category);
+export default async function CategoryPage({ params, searchParams }) {
+  // Await params and searchParams in Next 15+
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
+  const searchP = await searchParams;
+  
+  const isAll = slug === 'all' || slug === 'clothing';
+  const categoryParam = isAll ? undefined : slug;
+  
+  const fetchParams = { ...searchP };
+  if (categoryParam) fetchParams.category = categoryParam;
+
+  const products = await fetchProducts(fetchParams);
+  const categoryName = isAll ? null : await fetchCategoryName(slug);
 
   const sortOptions = [
     { label: "Nổi bật", value: "latest" },

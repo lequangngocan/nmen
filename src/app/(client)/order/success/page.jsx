@@ -81,7 +81,7 @@ function SuccessContent() {
         {/* CTA */}
         <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
           <Link
-            href="/clothing"
+            href="/all"
             className="bg-black text-white px-8 py-4 font-headline font-bold uppercase tracking-[0.15em] text-sm hover:bg-stone-800 transition-all"
           >
             Tiếp tục mua sắm

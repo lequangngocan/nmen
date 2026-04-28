@@ -46,7 +46,7 @@ export default function WishlistNestedPage() {
       {wishlistItems.length === 0 ? (
         <div className="text-center py-24 border-2 border-dashed border-stone-300">
           <p className="font-body text-xl text-stone-500 mb-6">Danh sách yêu thích của bạn đang trống.</p>
-          <Link href="/clothing" className="inline-block px-8 py-4 bg-black text-white font-bold uppercase text-sm tracking-widest hover:bg-stone-800 transition">
+          <Link href="/all" className="inline-block px-8 py-4 bg-black text-white font-bold uppercase text-sm tracking-widest hover:bg-stone-800 transition">
             Khám phá ngay
           </Link>
         </div>

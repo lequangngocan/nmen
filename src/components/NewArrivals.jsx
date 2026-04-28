@@ -32,7 +32,7 @@ export default async function NewArrivals() {
         </div>
         
         <Link 
-          href="/clothing"
+          href="/all"
           className="font-headline text-xs font-bold uppercase tracking-widest text-black border-b border-black pb-1 hover:opacity-60 transition-opacity whitespace-nowrap shrink-0 ml-4"
         >
           Xem trọn bộ

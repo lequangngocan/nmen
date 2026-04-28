@@ -30,7 +30,7 @@ export default function CartPage() {
       {items.length === 0 ? (
         <div className="text-center py-20 bg-stone-100">
           <p className="font-body text-lg mb-6 text-black">Giỏ hàng của bạn đang trống.</p>
-          <Link href="/clothing" className="inline-block px-8 py-4 bg-black text-white font-bold uppercase text-sm tracking-widest hover:bg-stone-800 transition">
+          <Link href="/all" className="inline-block px-8 py-4 bg-black text-white font-bold uppercase text-sm tracking-widest hover:bg-stone-800 transition">
             Tiếp tục mua sắm
           </Link>
         </div>

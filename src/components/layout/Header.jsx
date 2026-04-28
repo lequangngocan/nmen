@@ -29,7 +29,7 @@ function NavDropdown({ cat, currentCat }) {
   if (!hasChildren) {
     return (
       <Link
-        href={`/clothing?category=${cat.slug}`}
+        href={`/${cat.slug}`}
         className={`font-headline font-bold tracking-tighter uppercase text-sm transition-all duration-200 whitespace-nowrap ${
           isActive ? "text-black border-b-2 border-black pb-[2px]" : "text-stone-500 hover:text-black"
         }`}
@@ -53,7 +53,7 @@ function NavDropdown({ cat, currentCat }) {
       <div className="absolute top-full left-0 pt-4 z-50 hidden group-hover:block min-w-[180px]">
         <div className="bg-white shadow-lg border border-stone-100 py-2">
           <Link
-            href={`/clothing?category=${cat.slug}`}
+            href={`/${cat.slug}`}
             className="block px-5 py-3 text-xs font-label uppercase tracking-widest text-stone-400 hover:bg-stone-50 hover:text-black border-b border-stone-100"
           >
             Tất cả {cat.name}
@@ -61,7 +61,7 @@ function NavDropdown({ cat, currentCat }) {
           {cat.children.map((child) => (
             <Link
               key={child.id}
-              href={`/clothing?category=${child.slug}`}
+              href={`/${child.slug}`}
               className={`block px-5 py-3 text-xs font-label uppercase tracking-widest hover:bg-stone-50 hover:text-black ${
                 currentCat === child.slug ? "text-black font-bold" : "text-stone-600"
               }`}
@@ -104,7 +104,7 @@ export default function Header({ settings = {} }) {
     e.preventDefault();
     const q = e.target.search.value.trim();
     if (q) {
-      router.push(`/clothing?search=${encodeURIComponent(q)}`);
+      router.push(`/all?search=${encodeURIComponent(q)}`);
       setSearchOpen(false);
     }
   };
@@ -356,12 +356,12 @@ export default function Header({ settings = {} }) {
                 </button>
                 {mobileOpenCat === cat.id && (
                   <div className="bg-stone-50 pl-4">
-                    <Link href={`/clothing?category=${cat.slug}`} onClick={closeAll}
+                    <Link href={`/${cat.slug}`} onClick={closeAll}
                       className="py-3 border-b border-stone-100 flex items-center gap-2 text-xs uppercase text-stone-500">
                       <ChevronRight size={10} /> Tất cả {cat.name}
                     </Link>
                     {(cat.children || []).map((child) => (
-                      <Link key={child.id} href={`/clothing?category=${child.slug}`} onClick={closeAll}
+                      <Link key={child.id} href={`/${child.slug}`} onClick={closeAll}
                         className="py-3 border-b border-stone-100 flex items-center gap-2 text-xs uppercase text-stone-600">
                         <ChevronRight size={10} /> {child.name}
                       </Link>

@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const shopLinks = [
-  { label: "Hàng mới về", href: "/clothing" },
-  { label: "Bộ Suit", href: "/clothing" },
-  { label: "Phụ kiện", href: "/clothing" },
+  { label: "Hàng mới về", href: "/all" },
+  { label: "Tất cả sản phẩm", href: "/all" },
+  { label: "Phụ kiện", href: "/phu-kien" },
 ];
 
 const assistanceLinks = [
