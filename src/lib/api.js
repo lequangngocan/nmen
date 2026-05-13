@@ -2,10 +2,12 @@ const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // hàm gọi API chung, tự thêm token nếu đang đăng nhập
 export async function apiFetch(path, options = {}) {
-  // Ưu tiên admin token (nếu có) → fallback sang client token
   const adminToken  = typeof window !== 'undefined' ? localStorage.getItem('nmen_admin_token') : null;
   const clientToken = typeof window !== 'undefined' ? localStorage.getItem('nmen_token') : null;
-  const token = adminToken || clientToken;
+  
+  // API được gọi từ trang Admin (dựa trên URL hiện tại) thì dùng adminToken, còn lại dùng clientToken
+  const isAdminRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+  const token = isAdminRoute ? adminToken : clientToken;
 
   const res = await fetch(`${BASE}${path}`, {
     ...options,
@@ -26,10 +28,21 @@ export async function apiFetch(path, options = {}) {
   const data = await res.json();
 
   if (!res.ok) {
-    const err = new Error(data.message || `Lỗi ${res.status}`);
-    err.status = res.status;
-    err.data = data;
-    throw err;
+    // Nếu token hết hạn hoặc sai, đá về trang đăng nhập tương ứng
+    if (res.status === 401 && typeof window !== 'undefined') {
+      if (!path.includes('/login') && !path.includes('/register')) {
+        if (isAdminRoute) {
+          localStorage.removeItem('nmen_admin_token');
+          localStorage.removeItem('nmen_admin_user');
+          window.location.href = '/admin/login';
+        } else {
+          localStorage.removeItem('nmen_token');
+          localStorage.removeItem('nmen_user');
+          window.location.href = '/login';
+        }
+      }
+    }
+    throw new Error(data.message || 'Lỗi server');
   }
 
   return data;

@@ -147,13 +147,29 @@ const updateAddress = async (req, res) => {
 // DELETE /api/addresses/:id — xóa địa chỉ
 const deleteAddress = async (req, res) => {
   try {
+    // Kiểm tra trước khi xóa
+    const [existing] = await pool.query(
+      'SELECT is_default FROM user_addresses WHERE id = ? AND user_id = ?',
+      [req.params.id, req.user.id]
+    );
+    if (existing.length === 0) return res.status(404).json({ message: 'Không tìm thấy địa chỉ' });
+
+    const wasDefault = existing[0].is_default === 1;
+
     const [result] = await pool.query(
       'DELETE FROM user_addresses WHERE id = ? AND user_id = ?',
       [req.params.id, req.user.id]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Không tìm thấy địa chỉ' });
+    if (result.affectedRows === 0) return res.status(404).json({ message: 'Không tìm thấy địa chỉ' });
+
+    // Nếu vừa xóa địa chỉ mặc định → set địa chỉ còn lại đầu tiên làm default
+    if (wasDefault) {
+      await pool.query(
+        'UPDATE user_addresses SET is_default = 1 WHERE user_id = ? ORDER BY created_at ASC LIMIT 1',
+        [req.user.id]
+      );
     }
+
     res.json({ message: 'Đã xóa địa chỉ' });
   } catch (err) {
     console.error(err);

@@ -12,8 +12,10 @@ const toSlug = (str) =>
 // lấy tin tức đã xuất bản (dành cho trang người dùng)
 const getNews = async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(50, parseInt(req.query.limit) || 10);
+    let page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    if (page < 1) page = 1;
+    if (limit > 50) limit = 50;
     const offset = (page - 1) * limit;
 
     const [[{ total }]] = await pool.query(

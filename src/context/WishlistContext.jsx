@@ -17,6 +17,7 @@ export function WishlistProvider({ children }) {
     if (!mounted) return;
 
     if (!user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setItems([]);
       return;
     }
@@ -60,7 +61,18 @@ export function WishlistProvider({ children }) {
       try {
         await apiPost("/api/wishlist", { product_id: productId });
         // Thêm thành công → cập nhật items ngay, không cần GET lại
-        setItems((prev) => [...prev, { product_id: productId }]);
+        setItems((prev) => [
+          ...prev,
+          {
+            product_id: productId,
+            name: product.name || '',
+            slug: product.slug || '',
+            price: product.price || 0,
+            sale_price: product.sale_price || null,
+            primary_image: product.primary_image || null,
+            category_name: product.category_name || '',
+          },
+        ]);
       } catch (e) {
         console.error(e);
         alert("Có lỗi xảy ra khi thêm vào yêu thích.");

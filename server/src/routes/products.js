@@ -5,7 +5,7 @@ const adminOnly = require('../middleware/adminOnly');
 const {
   getProducts, getProductById, getProductBySlug,
   createProduct, updateProduct, deleteProduct,
-  addVariant, deleteVariant,
+  addVariant, updateVariant, deleteVariant,
 } = require('../controllers/productController');
 
 router.get('/', getProducts);
@@ -15,6 +15,7 @@ router.post('/', auth, adminOnly, createProduct);
 router.put('/:id', auth, adminOnly, updateProduct);
 router.delete('/:id', auth, adminOnly, deleteProduct);
 router.post('/:id/variants', auth, adminOnly, addVariant);
+router.put('/:id/variants/:vid', auth, adminOnly, updateVariant);
 router.delete('/:id/variants/:vid', auth, adminOnly, deleteVariant);
 
 module.exports = router;

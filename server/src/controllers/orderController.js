@@ -1,9 +1,10 @@
 const pool = require('../db');
+const crypto = require('crypto');
 
 // tạo mã đơn hàng ngẫu nhiên
 const genOrderNumber = () => 'NM-' + Math.floor(10000 + Math.random() * 90000);
 
-// map status slug → label tiếng Việt (dùng cho response)
+// tên trạng thái đơn hàng
 const STATUS_LABELS = {
   pending:    'Chờ xác nhận',
   confirmed:  'Đã xác nhận',
@@ -13,6 +14,23 @@ const STATUS_LABELS = {
   cancelled:  'Đã hủy',
   returned:   'Trả hàng',
 };
+
+// các chuyển trạng thái được phép
+const ALLOWED_TRANSITIONS = {
+  pending:    ['confirmed', 'cancelled'],
+  confirmed:  ['processing', 'cancelled'],
+  processing: ['shipping', 'cancelled'],
+  shipping:   ['delivered', 'returned'],
+  delivered:  ['returned'],
+  cancelled:  [],
+  returned:   [],
+};
+
+// trạng thái được phép sửa sản phẩm
+const ITEM_EDITABLE_STATUSES = ['pending', 'confirmed'];
+
+// trạng thái đã kết thúc, không cho sửa
+const TERMINAL_STATUSES = ['cancelled', 'returned'];
 
 // đặt hàng
 const createOrder = async (req, res) => {
@@ -95,8 +113,9 @@ const createOrder = async (req, res) => {
       });
     }
 
-    // kiểm tra mã giảm giá
+    // kiểm tra mã giảm giá (chưa tăng used_count, sẽ tăng sau khi transaction commit)
     let discountAmount = 0;
+    let appliedPromoId = null;
     if (promo_code) {
       const [promos] = await conn.query(
         'SELECT * FROM promo_codes WHERE code = ? AND is_active = 1',
@@ -113,7 +132,8 @@ const createOrder = async (req, res) => {
           discountAmount = promo.discount_type === 'percent'
             ? Math.round(subtotal * promo.discount_value / 100)
             : Number(promo.discount_value);
-          await conn.query('UPDATE promo_codes SET used_count = used_count + 1 WHERE id = ?', [promo.id]);
+          // Lưu lại id để tăng used_count BÊN TRONG transaction (BUG-03 fix)
+          appliedPromoId = promo.id;
         }
       }
     }
@@ -121,45 +141,46 @@ const createOrder = async (req, res) => {
     // phí ship: phương án A — luôn miễn phí
     const shippingFee = 0;
     const totalAmount = subtotal - discountAmount + shippingFee;
-    const pointsEarned = Math.floor(totalAmount / 10000);
-    const order_number = genOrderNumber();
+    let order_number;
+    let attempts = 0;
+    do {
+      order_number = genOrderNumber();
+      const [dup] = await conn.query('SELECT id FROM orders WHERE order_number = ?', [order_number]);
+      if (dup.length === 0) break;
+      attempts++;
+    } while (attempts < 5);
     const user_id = req.user?.id || null;
 
     await conn.beginTransaction();
 
-    // ─── Lớp 1 + 2: Kiểm tra & khóa tồn kho trước khi tạo đơn ───────────────
-    // Thực hiện TRƯỚC khi INSERT order để không tạo đơn "rác" rồi rollback.
+    // kiểm tra tồn kho trước khi tạo đơn
     for (const item of enrichedItems) {
-      if (item.variant_id) {
-        // LỚP 1: SELECT FOR UPDATE — lock row, các transaction khác phải đợi
-        const [lockRows] = await conn.query(
-          'SELECT id, stock FROM product_variants WHERE id = ? FOR UPDATE',
-          [item.variant_id]
-        );
-        if (lockRows.length === 0 || lockRows[0].stock < item.quantity) {
-          await conn.rollback();
-          return res.status(409).json({
-            message: `Sản phẩm "${item.product_name}" (${item.size || ''}) không đủ hàng. Còn lại: ${lockRows[0]?.stock ?? 0}`,
-          });
-        }
-      } else {
-        // fallback: lock theo product + size + color
-        const [lockRows] = await conn.query(
-          `SELECT id, stock FROM product_variants
-           WHERE product_id = ? AND size = ? AND color_hex = ? FOR UPDATE`,
+      if (!item.variant_id) {
+        const [vRows] = await conn.query(
+          'SELECT id, stock FROM product_variants WHERE product_id = ? AND size = ? AND color_hex = ?',
           [item.product_id, item.size || '', item.color || '']
         );
-        if (lockRows.length === 0 || lockRows[0].stock < item.quantity) {
+        if (vRows.length === 0) {
           await conn.rollback();
-          return res.status(409).json({
-            message: `Sản phẩm "${item.product_name}" (${item.size || ''}) không đủ hàng. Còn lại: ${lockRows[0]?.stock ?? 0}`,
-          });
+          return res.status(400).json({ message: `Không tìm thấy biến thể cho sản phẩm "${item.product_name}"` });
         }
-        // gắn variant_id tìm được để dùng ở bước UPDATE bên dưới
-        item.variant_id = lockRows[0].id;
+        item.variant_id = vRows[0].id;
+        item._stock = vRows[0].stock;
+      } else {
+        const [vRows] = await conn.query(
+          'SELECT stock FROM product_variants WHERE id = ?',
+          [item.variant_id]
+        );
+        item._stock = vRows.length > 0 ? vRows[0].stock : 0;
+      }
+
+      if (item._stock < item.quantity) {
+        await conn.rollback();
+        return res.status(400).json({
+          message: `Sản phẩm "${item.product_name}" (${item.size || ''}) không đủ hàng`,
+        });
       }
     }
-    // ─────────────────────────────────────────────────────────────────────────
 
     const [orderResult] = await conn.query(
       `INSERT INTO orders
@@ -167,14 +188,14 @@ const createOrder = async (req, res) => {
          shipping_address, shipping_commune, shipping_province,
          shipping_province_id, shipping_commune_id,
          payment_method, promo_code, discount_amount,
-         subtotal, shipping_fee, total_amount, note, points_earned)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         subtotal, shipping_fee, total_amount, note)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         order_number, user_id, customer_name, email, phone,
         address.trim(), shippingCommune, shippingProvince,
         province_id || null, commune_id || null,
         payment_method, promo_code || null, discountAmount,
-        subtotal, shippingFee, totalAmount, note || null, pointsEarned,
+        subtotal, shippingFee, totalAmount, note || null,
       ]
     );
     const orderId = orderResult.insertId;
@@ -194,38 +215,83 @@ const createOrder = async (req, res) => {
         ]
       );
 
-      // LỚP 2: Atomic UPDATE với điều kiện AND stock >= ? (safety net)
-      // Nếu lớp 1 bị bypass, affectedRows = 0 sẽ phát hiện và rollback
-      const [updateResult] = await conn.query(
-        'UPDATE product_variants SET stock = stock - ? WHERE id = ? AND stock >= ?',
-        [item.quantity, item.variant_id, item.quantity]
+      // cập nhật tồn kho
+      await conn.query(
+        'UPDATE product_variants SET stock = stock - ? WHERE id = ?',
+        [item.quantity, item.variant_id]
       );
-      if (updateResult.affectedRows === 0) {
-        await conn.rollback();
-        return res.status(409).json({
-          message: `Sản phẩm "${item.product_name}" (${item.size || ''}) vừa hết hàng trong lúc xử lý. Vui lòng thử lại.`,
-        });
-      }
     }
 
-    // cộng điểm nếu người dùng đã đăng nhập
-    if (user_id) {
-      await conn.query('UPDATE users SET points = points + ? WHERE id = ?', [pointsEarned, user_id]);
-      await conn.query(
-        'INSERT INTO loyalty_transactions (user_id, order_id, type, points, note) VALUES (?, ?, ?, ?, ?)',
-        [user_id, orderId, 'earn', pointsEarned, `Tích điểm đơn ${order_number}`]
-      );
+    // tăng used_count của promo BÊN TRONG transaction — nếu rollback thì không bị tăng (BUG-03 fix)
+    if (appliedPromoId) {
+      await conn.query('UPDATE promo_codes SET used_count = used_count + 1 WHERE id = ?', [appliedPromoId]);
     }
+
+    // cộng điểm nếu người dùng đã đăng nhập (đã xoá)
 
     await conn.commit();
+    let sepayCheckoutData = null;
+    if (payment_method === 'Sepay') {
+      // TẠO GIAO DỊCH PENDING TRƯỚC THEO YÊU CẦU ĐỒ ÁN
+      await conn.query(
+        `INSERT INTO payment_transactions 
+          (order_id, gateway, reference_number, amount, transaction_content, raw_payload, status) 
+         VALUES (?, 'Sepay', ?, ?, ?, ?, 'pending')`,
+        [orderId, `PENDING_${order_number}`, totalAmount, `Đang chờ thanh toán đơn ${order_number}`, JSON.stringify({})]
+      );
+
+      const merchant = process.env.SEPAY_MERCHANT_ID || 'MERCHANT_123456';
+      const integrationKey = process.env.SEPAY_SECRET_KEY || 'INTEGRATION_KEY_SECRET';
+      const payment_method = 'BANK_TRANSFER';
+      const currency = 'VND';
+      const operation = 'PURCHASE';
+      const order_description = `Thanh toan don hang ${order_number}`;
+      const success_url = `${process.env.CORS_ORIGIN || 'http://localhost:3000'}/order/success?order=${order_number}&total=${totalAmount}&phone=${encodeURIComponent(phone)}`;
+      const error_url = `${process.env.CORS_ORIGIN || 'http://localhost:3000'}/order/failed?order=${order_number}&phone=${encodeURIComponent(phone)}`;
+      const cancel_url = `${process.env.CORS_ORIGIN || 'http://localhost:3000'}/order/failed?order=${order_number}&phone=${encodeURIComponent(phone)}`;
+      
+      // Chữ ký Sepay yêu cầu format cụ thể: field1=value1,field2=value2... theo đúng thứ tự
+      const signedString = [
+        `merchant=${merchant}`,
+        `operation=${operation}`,
+        `payment_method=${payment_method}`,
+        `order_amount=${totalAmount}`,
+        `currency=${currency}`,
+        `order_invoice_number=${order_number}`,
+        `order_description=${order_description}`,
+        `success_url=${success_url}`,
+        `error_url=${error_url}`,
+        `cancel_url=${cancel_url}`
+      ].join(',');
+
+      // Hàm băm dùng sha256, encode base64
+      const signature = crypto.createHmac('sha256', integrationKey).update(signedString).digest('base64');
+
+      sepayCheckoutData = {
+        action: process.env.SEPAY_ENVIRONMENT === 'sandbox' ? 'https://pay-sandbox.sepay.vn/v1/checkout/init' : 'https://pay.sepay.vn/v1/checkout/init',
+        params: {
+          merchant,
+          operation,
+          payment_method,
+          order_amount: totalAmount,
+          currency,
+          order_invoice_number: order_number,
+          order_description,
+          success_url,
+          error_url,
+          cancel_url,
+          signature
+        }
+      };
+    }
 
     res.status(201).json({
       order_number,
       total_amount: totalAmount,
       discount_amount: discountAmount,
-      points_earned: pointsEarned,
       status: 'pending',
       status_label: STATUS_LABELS['pending'],
+      sepay_checkout: sepayCheckoutData
     });
   } catch (err) {
     await conn.rollback();
@@ -241,15 +307,15 @@ const getMyOrders = async (req, res) => {
   try {
     const [orders] = await pool.query(
       `SELECT id, order_number, status, payment_method, payment_status,
-              subtotal, discount_amount, shipping_fee, total_amount,
-              points_earned, note, created_at
+              promo_code, subtotal, discount_amount, shipping_fee, total_amount,
+              note, created_at
        FROM orders WHERE user_id = ? ORDER BY created_at DESC`,
       [req.user.id]
     );
 
     for (const order of orders) {
       const [items] = await pool.query(
-        `SELECT product_id, variant_id, product_name, color_name, color_hex,
+        `SELECT id, product_id, variant_id, product_name, color_name, color_hex,
                 size, image_url, original_price, unit_price, quantity, line_total
          FROM order_items WHERE order_id = ?`,
         [order.id]
@@ -276,12 +342,12 @@ const getOrderById = async (req, res) => {
     const order = rows[0];
 
     // chỉ cho xem đơn của mình, admin thì xem hết
-    if (req.user.role !== 'admin' && order.user_id !== req.user.id) {
+    if (req.user.role !== 'admin' && (order.user_id === null || order.user_id !== req.user.id)) {
       return res.status(403).json({ message: 'Không có quyền xem đơn hàng này' });
     }
 
     const [items] = await pool.query(
-      `SELECT product_id, variant_id, product_name, color_name, color_hex,
+      `SELECT id, product_id, variant_id, product_name, color_name, color_hex,
               size, image_url, original_price, unit_price, quantity, line_total
        FROM order_items WHERE order_id = ?`,
       [order.id]
@@ -325,15 +391,31 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-// cập nhật trạng thái đơn hàng
+// cập nhật trạng thái đơn hàng (có validate luồng + hoàn kho khi hủy/trả)
 const updateOrderStatus = async (req, res) => {
+  const conn = await pool.getConnection();
   try {
     const { status, cancelled_reason } = req.body;
-    const validStatuses = ['pending', 'confirmed', 'processing', 'shipping', 'delivered', 'cancelled', 'returned'];
 
-    if (!validStatuses.includes(status)) {
+    // BUG-02 fix: kiểm tra đúng cú pháp — ALLOWED_TRANSITIONS[status] === undefined
+    if (ALLOWED_TRANSITIONS[status] === undefined) {
       return res.status(400).json({ message: 'Trạng thái không hợp lệ' });
     }
+
+    // lấy đơn hiện tại
+    const [rows] = await conn.query('SELECT id, status FROM orders WHERE id = ?', [req.params.id]);
+    if (rows.length === 0) return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+
+    const currentStatus = rows[0].status;
+
+    // validate luồng
+    if (!ALLOWED_TRANSITIONS[currentStatus] || !ALLOWED_TRANSITIONS[currentStatus].includes(status)) {
+      return res.status(409).json({
+        message: `Không thể chuyển từ "${STATUS_LABELS[currentStatus]}" sang "${STATUS_LABELS[status]}"`,
+      });
+    }
+
+    await conn.beginTransaction();
 
     const updates = ['status = ?'];
     const params = [status];
@@ -342,24 +424,253 @@ const updateOrderStatus = async (req, res) => {
       updates.push('cancelled_reason = ?');
       params.push(cancelled_reason);
     }
-
-    params.push(req.params.id);
-
-    const [result] = await pool.query(
-      `UPDATE orders SET ${updates.join(', ')} WHERE id = ?`,
-      params
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+    if (status === 'returned' && cancelled_reason) {
+      updates.push('cancelled_reason = ?');
+      params.push(cancelled_reason);
     }
 
+    params.push(req.params.id);
+    await conn.query(`UPDATE orders SET ${updates.join(', ')} WHERE id = ?`, params);
+
+    // hoàn kho khi hủy hoặc trả hàng
+    if (status === 'cancelled' || status === 'returned') {
+      const [items] = await conn.query(
+        'SELECT variant_id, quantity FROM order_items WHERE order_id = ?',
+        [req.params.id]
+      );
+      for (const item of items) {
+        if (item.variant_id) {
+          await conn.query(
+            'UPDATE product_variants SET stock = stock + ? WHERE id = ?',
+            [item.quantity, item.variant_id]
+          );
+        }
+      }
+    }
+
+    await conn.commit();
     res.json({ message: 'Cập nhật trạng thái thành công', status_label: STATUS_LABELS[status] });
+  } catch (err) {
+    await conn.rollback();
+    console.error(err);
+    res.status(500).json({ message: 'Lỗi server' });
+  } finally {
+    conn.release();
+  }
+};
+
+// chỉnh sửa thông tin giao hàng và payment_status
+const updateOrderInfo = async (req, res) => {
+  try {
+    const { customer_name, phone, email, shipping_address, note, payment_status } = req.body;
+    const orderId = req.params.id;
+
+    const [rows] = await pool.query('SELECT status FROM orders WHERE id = ?', [orderId]);
+    if (rows.length === 0) return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+    if (TERMINAL_STATUSES.includes(rows[0].status)) {
+      return res.status(409).json({ message: 'Không thể chỉnh sửa đơn hàng đã kết thúc' });
+    }
+
+    const VALID_PAYMENT_STATUSES = ['pending', 'paid', 'failed', 'refunded'];
+    if (payment_status && !VALID_PAYMENT_STATUSES.includes(payment_status)) {
+      return res.status(400).json({ message: 'Trạng thái thanh toán không hợp lệ' });
+    }
+    if (customer_name !== undefined && customer_name.trim() === '') {
+      return res.status(400).json({ message: 'Tên khách hàng không được để trống' });
+    }
+    if (phone !== undefined && phone.trim() === '') {
+      return res.status(400).json({ message: 'Số điện thoại không được để trống' });
+    }
+
+    const fields = [];
+    const params = [];
+    if (customer_name !== undefined) { fields.push('customer_name = ?'); params.push(customer_name.trim()); }
+    if (phone !== undefined)         { fields.push('phone = ?');          params.push(phone.trim()); }
+    if (email !== undefined)         { fields.push('email = ?');          params.push(email.trim()); }
+    if (shipping_address !== undefined) { fields.push('shipping_address = ?'); params.push(shipping_address.trim()); }
+    if (note !== undefined)          { fields.push('note = ?');           params.push(note); }
+    if (payment_status !== undefined){ fields.push('payment_status = ?'); params.push(payment_status); }
+
+    if (fields.length === 0) return res.status(400).json({ message: 'Không có thông tin nào để cập nhật' });
+
+    params.push(orderId);
+    await pool.query(`UPDATE orders SET ${fields.join(', ')} WHERE id = ?`, params);
+    res.json({ message: 'Cập nhật thông tin thành công' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Lỗi server' });
   }
 };
+
+// chỉnh sửa sản phẩm trong đơn — chỉ COD + pending/confirmed
+const updateOrderItems = async (req, res) => {
+  const conn = await pool.getConnection();
+  try {
+    const orderId = req.params.id;
+    const { updates = [], additions = [], deletions = [] } = req.body;
+
+    const [orderRows] = await conn.query(
+      'SELECT status, payment_method FROM orders WHERE id = ?', [orderId]
+    );
+    if (orderRows.length === 0) return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+
+    const { status, payment_method } = orderRows[0];
+    if (payment_method !== 'COD' && (additions.length > 0 || deletions.length > 0)) {
+      return res.status(400).json({ message: 'Không thể thêm hoặc xóa sản phẩm với đơn đã thanh toán' });
+    }
+    if (!ITEM_EDITABLE_STATUSES.includes(status)) {
+      return res.status(409).json({ message: `Không thể sửa sản phẩm khi đơn ở trạng thái "${STATUS_LABELS[status]}"` });
+    }
+
+    // kiểm tra số items còn lại >= 1
+    const [currentItems] = await conn.query(
+      'SELECT id FROM order_items WHERE order_id = ?', [orderId]
+    );
+    const remainingCount = currentItems.length - deletions.length + additions.length;
+    if (remainingCount < 1) {
+      return res.status(400).json({ message: 'Đơn hàng cần có ít nhất 1 sản phẩm' });
+    }
+
+    await conn.beginTransaction();
+
+    // --- DELETIONS ---
+    for (const itemId of deletions) {
+      const [itemRows] = await conn.query(
+        'SELECT variant_id, quantity FROM order_items WHERE id = ? AND order_id = ?', [itemId, orderId]
+      );
+      if (itemRows.length === 0) continue;
+      const { variant_id, quantity } = itemRows[0];
+      if (variant_id) {
+        await conn.query('UPDATE product_variants SET stock = stock + ? WHERE id = ?', [quantity, variant_id]);
+      }
+      await conn.query('DELETE FROM order_items WHERE id = ?', [itemId]);
+    }
+
+    // --- UPDATES ---
+    for (const upd of updates) {
+      const { item_id, quantity, variant_id: newVariantId } = upd;
+      const [itemRows] = await conn.query(
+        'SELECT variant_id, quantity, product_id FROM order_items WHERE id = ? AND order_id = ?',
+        [item_id, orderId]
+      );
+      if (itemRows.length === 0) continue;
+      const { variant_id: oldVariantId, quantity: oldQty, product_id } = itemRows[0];
+
+      const targetVariantId = newVariantId || oldVariantId;
+
+      // validate variant cùng product nếu đổi
+      if (newVariantId && newVariantId !== oldVariantId) {
+        const [vRows] = await conn.query(
+          'SELECT id FROM product_variants WHERE id = ? AND product_id = ?', [newVariantId, product_id]
+        );
+        if (vRows.length === 0) {
+          await conn.rollback();
+          return res.status(400).json({ message: `Variant không thuộc sản phẩm này (item_id=${item_id})` });
+        }
+        // hoàn kho variant cũ
+        await conn.query('UPDATE product_variants SET stock = stock + ? WHERE id = ?', [oldQty, oldVariantId]);
+        // trừ kho variant mới
+        const [stockRows] = await conn.query(
+          'SELECT stock FROM product_variants WHERE id = ?', [newVariantId]
+        );
+        if (stockRows[0].stock < quantity) {
+          await conn.rollback();
+          return res.status(409).json({ message: 'Variant mới không đủ tồn kho' });
+        }
+        await conn.query('UPDATE product_variants SET stock = stock - ? WHERE id = ?', [quantity, newVariantId]);
+        // lấy info variant mới
+        const [vInfo] = await conn.query(
+          'SELECT color_name, color_hex, size FROM product_variants WHERE id = ?', [newVariantId]
+        );
+        await conn.query(
+          'UPDATE order_items SET variant_id = ?, color_name = ?, color_hex = ?, size = ?, quantity = ? WHERE id = ?',
+          [newVariantId, vInfo[0].color_name, vInfo[0].color_hex, vInfo[0].size, quantity, item_id]
+        );
+      } else {
+        // chỉ đổi qty
+        const delta = quantity - oldQty;
+        if (delta > 0) {
+          const [stockRows] = await conn.query(
+            'SELECT stock FROM product_variants WHERE id = ?', [targetVariantId]
+          );
+          if (stockRows[0].stock < delta) {
+            await conn.rollback();
+            return res.status(409).json({ message: 'Không đủ tồn kho để tăng số lượng' });
+          }
+          await conn.query('UPDATE product_variants SET stock = stock - ? WHERE id = ?', [delta, targetVariantId]);
+        } else if (delta < 0) {
+          await conn.query('UPDATE product_variants SET stock = stock + ? WHERE id = ?', [Math.abs(delta), targetVariantId]);
+        }
+        await conn.query('UPDATE order_items SET quantity = ? WHERE id = ?', [quantity, item_id]);
+      }
+    }
+
+    // --- ADDITIONS ---
+    for (const add of additions) {
+      const { product_id, variant_id, quantity } = add;
+      const [pRows] = await conn.query(
+        `SELECT p.name, p.price, p.sale_price,
+                (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id AND pi.is_primary = 1 LIMIT 1) AS primary_image
+         FROM products p WHERE p.id = ? AND p.deleted_at IS NULL`,
+        [product_id]
+      );
+      if (pRows.length === 0) {
+        await conn.rollback();
+        return res.status(400).json({ message: `Sản phẩm ID ${product_id} không tồn tại` });
+      }
+      const product = pRows[0];
+      const unitPrice = product.sale_price ? Number(product.sale_price) : Number(product.price);
+
+      const [vRows] = await conn.query(
+        'SELECT color_name, color_hex, size, stock FROM product_variants WHERE id = ? AND product_id = ?',
+        [variant_id, product_id]
+      );
+      if (vRows.length === 0) {
+        await conn.rollback();
+        return res.status(400).json({ message: `Variant ID ${variant_id} không thuộc sản phẩm ID ${product_id}` });
+      }
+      if (vRows[0].stock < quantity) {
+        await conn.rollback();
+        return res.status(409).json({ message: `Sản phẩm "${product.name}" (${vRows[0].size}) không đủ hàng` });
+      }
+      await conn.query('UPDATE product_variants SET stock = stock - ? WHERE id = ?', [quantity, variant_id]);
+      await conn.query(
+        `INSERT INTO order_items (order_id, product_id, variant_id, product_name, color_name, color_hex, size, image_url, original_price, unit_price, quantity)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [orderId, product_id, variant_id, product.name, vRows[0].color_name, vRows[0].color_hex, vRows[0].size, product.primary_image || null, Number(product.price), unitPrice, quantity]
+      );
+    }
+
+    // tính lại tổng đơn
+    const [orderInfo] = await conn.query(
+      'SELECT discount_amount, shipping_fee FROM orders WHERE id = ?', [orderId]
+    );
+    const [sumResult] = await conn.query(
+      'SELECT SUM(unit_price * quantity) AS subtotal FROM order_items WHERE order_id = ?', [orderId]
+    );
+    const subtotal = Number(sumResult[0].subtotal) || 0;
+    const totalAmount = Math.max(0, subtotal - Number(orderInfo[0].discount_amount) + Number(orderInfo[0].shipping_fee));
+    await conn.query(
+      'UPDATE orders SET subtotal = ?, total_amount = ? WHERE id = ?',
+      [subtotal, totalAmount, orderId]
+    );
+
+    // lấy items mới
+    const [newItems] = await conn.query(
+      'SELECT * FROM order_items WHERE order_id = ?', [orderId]
+    );
+
+    await conn.commit();
+    res.json({ message: 'Cập nhật sản phẩm thành công', items: newItems, subtotal, totalAmount });
+  } catch (err) {
+    await conn.rollback();
+    console.error(err);
+    res.status(500).json({ message: 'Lỗi server' });
+  } finally {
+    conn.release();
+  }
+};
+
 
 // tra cứu đơn hàng công khai — dùng cho khách vãng lai
 const lookupOrder = async (req, res) => {
@@ -474,5 +785,78 @@ const cancelOrderByLookup = async (req, res) => {
     conn.release();
   }
 };
+// -- FRONTEND MOCK VERIFY SEPAY (CHỈ DÙNG CHO ĐỒ ÁN LOCAL) --
+const verifySepayFrontend = async (req, res) => {
+  const conn = await pool.getConnection();
+  try {
+    const { order_number, status } = req.body;
+    if (!order_number || !status) {
+      return res.status(400).json({ message: 'Thiếu thông tin' });
+    }
 
-module.exports = { createOrder, getMyOrders, getOrderById, getAllOrders, updateOrderStatus, lookupOrder, cancelOrderByLookup };
+    const [orders] = await conn.query(
+      'SELECT id, status, payment_status FROM orders WHERE order_number = ?',
+      [order_number]
+    );
+    if (orders.length === 0) return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+
+    const orderId = orders[0].id;
+    const currentStatus = orders[0].status;
+
+    // Nếu đã thanh toán rồi thì bỏ qua
+    if (orders[0].payment_status === 'paid') {
+      return res.json({ success: true, message: 'Đã thanh toán trước đó' });
+    }
+
+    await conn.beginTransaction();
+
+    if (status === 'success') {
+      // Thanh toán thành công: xác nhận đơn
+      await conn.query(
+        "UPDATE orders SET payment_status = 'paid', status = 'confirmed' WHERE id = ?",
+        [orderId]
+      );
+      await conn.query(
+        "UPDATE payment_transactions SET status = 'success' WHERE order_id = ? AND status = 'pending'",
+        [orderId]
+      );
+    } else {
+      // Thanh toán thất bại / bị hủy: hủy đơn hàng và hoàn kho
+      if (currentStatus !== 'cancelled') {
+        await conn.query(
+          "UPDATE orders SET status = 'cancelled', payment_status = 'failed', cancelled_reason = 'Thanh toán thất bại hoặc bị hủy' WHERE id = ?",
+          [orderId]
+        );
+        await conn.query(
+          "UPDATE payment_transactions SET status = 'failed' WHERE order_id = ? AND status = 'pending'",
+          [orderId]
+        );
+
+        // Hoàn trả tồn kho
+        const [items] = await conn.query(
+          'SELECT variant_id, quantity FROM order_items WHERE order_id = ?',
+          [orderId]
+        );
+        for (const item of items) {
+          if (item.variant_id) {
+            await conn.query(
+              'UPDATE product_variants SET stock = stock + ? WHERE id = ?',
+              [item.quantity, item.variant_id]
+            );
+          }
+        }
+      }
+    }
+
+    await conn.commit();
+    res.json({ success: true, message: 'Đã cập nhật trạng thái thanh toán từ Frontend' });
+  } catch (err) {
+    await conn.rollback();
+    console.error(err);
+    res.status(500).json({ message: 'Lỗi server' });
+  } finally {
+    conn.release();
+  }
+};
+
+module.exports = { createOrder, getMyOrders, getOrderById, getAllOrders, updateOrderStatus, updateOrderInfo, updateOrderItems, lookupOrder, cancelOrderByLookup, verifySepayFrontend };

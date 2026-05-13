@@ -2,17 +2,26 @@
 
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { CheckCircle, Package, ArrowRight, Search } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { apiPost } from "@/lib/api";
 
 function SuccessContent() {
   const params = useSearchParams();
   const orderNumber = params.get("order") || "";
   const total = params.get("total") ? Number(params.get("total")) : null;
   const phone = params.get("phone") || "";
+  const method = params.get("method") || "";
   const { user, mounted: authMounted } = useAuth();
   const isLoggedIn = authMounted && !!user;
+
+  useEffect(() => {
+    // Chỉ gọi verify-sepay cho thanh toán online, không gọi cho COD
+    if (orderNumber && method !== "cod") {
+      apiPost('/api/orders/verify-sepay', { order_number: orderNumber, status: 'success' }).catch(console.error);
+    }
+  }, [orderNumber, method]);
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-6">

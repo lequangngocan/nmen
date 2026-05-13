@@ -6,12 +6,7 @@ import { apiGet } from "@/lib/api";
 import { ArrowLeft, MapPin, ShoppingBag, Star, Phone, Mail, Calendar, User } from "lucide-react";
 import Link from "next/link";
 
-const TIER_STYLE = {
-  "Hạng Đồng": "bg-amber-100 text-amber-700",
-  "Hạng Bạc":  "bg-stone-200 text-stone-600",
-  "Hạng Vàng": "bg-yellow-100 text-yellow-700",
-  "Hạng Đen":  "bg-stone-900 text-white",
-};
+
 
 const ORDER_STATUS_STYLE = {
   "Chờ xác nhận": "bg-yellow-100 text-yellow-700",
@@ -42,12 +37,65 @@ export default function AdminUserDetailPage() {
   const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  // Edit states
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    full_name: "",
+    phone: "",
+
+    status: "active"
+  });
+
+  const loadUser = () => {
+    setLoading(true);
     apiGet(`/api/users/${id}`)
-      .then(setUser)
+      .then(data => {
+        setUser(data);
+        setForm({
+          full_name: data.full_name || "",
+          phone: data.phone || "",
+
+          status: data.status || "active"
+        });
+      })
       .catch(() => router.push("/admin/users"))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadUser();
   }, [id]);
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("nmen_token")}`
+        },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json();
+      if (!res.ok) alert(data.message || "Lỗi cập nhật");
+      else {
+        setIsEditing(false);
+        loadUser();
+      }
+    } catch {
+      alert("Lỗi kết nối server");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+  };
 
   if (loading) {
     return <div className="py-20 text-center text-stone-400">Đang tải...</div>;
@@ -63,37 +111,76 @@ export default function AdminUserDetailPage() {
         <ArrowLeft size={16} /> Quay lại danh sách
       </Link>
 
-      {/* Header card */}
-      <div className="bg-white border border-stone-200 rounded-lg p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center mb-6">
-        <Avatar url={user.avatar_url} name={user.full_name} size={80} />
-        <div className="flex-1">
-          <div className="flex flex-wrap items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-stone-900">{user.full_name}</h1>
-            <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded ${TIER_STYLE[user.tier] || "bg-stone-100 text-stone-500"}`}>
-              {user.tier}
-            </span>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-stone-900">Chi tiết khách hàng</h1>
+        {!isEditing ? (
+          <button onClick={() => setIsEditing(true)} className="bg-stone-900 text-white px-4 py-2 rounded text-sm font-medium hover:bg-stone-800 transition-colors">
+            Chỉnh sửa thông tin
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <button onClick={() => setIsEditing(false)} disabled={saving} className="border border-stone-300 px-4 py-2 rounded text-sm font-medium hover:bg-stone-50 transition-colors">
+              Hủy
+            </button>
+            <button onClick={handleSave} disabled={saving} className="bg-stone-900 text-white px-4 py-2 rounded text-sm font-medium hover:bg-stone-800 transition-colors disabled:opacity-50">
+              {saving ? "Đang lưu..." : "Lưu thay đổi"}
+            </button>
           </div>
-          <div className="flex flex-wrap gap-4 text-sm text-stone-500">
-            <a href={`mailto:${user.email}`} className="flex items-center gap-1.5 hover:text-black transition-colors">
-              <Mail size={13} />{user.email}
-            </a>
-            {user.phone && (
-              <a href={`tel:${user.phone}`} className="flex items-center gap-1.5 hover:text-black transition-colors">
-                <Phone size={13} />{user.phone}
-              </a>
-            )}
-            <span className="flex items-center gap-1.5">
-              <Calendar size={13} />
-              Tham gia {new Date(user.joined_at).toLocaleDateString("vi-VN")}
-            </span>
-          </div>
-        </div>
-        {/* Điểm thưởng */}
-        <div className="text-center bg-stone-50 rounded-lg px-6 py-4 min-w-[120px]">
-          <p className="text-xs text-stone-500 uppercase tracking-widest mb-1">Điểm thưởng</p>
-          <p className="text-3xl font-bold text-stone-900">{user.points}</p>
-        </div>
+        )}
       </div>
+
+      {isEditing ? (
+        <div className="bg-white border border-stone-200 rounded-lg p-6 mb-6">
+          <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-1">Họ và tên *</label>
+              <input type="text" name="full_name" value={form.full_name} onChange={handleFormChange} required className="w-full border border-stone-300 px-3 py-2 outline-none focus:border-black text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-1">Số điện thoại</label>
+              <input type="tel" name="phone" value={form.phone} onChange={handleFormChange} className="w-full border border-stone-300 px-3 py-2 outline-none focus:border-black text-sm" />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-1">Trạng thái tài khoản</label>
+              <select name="status" value={form.status} onChange={handleFormChange} className="w-full border border-stone-300 px-3 py-2 outline-none focus:border-black text-sm bg-white">
+                <option value="active">Đang hoạt động</option>
+                <option value="inactive">Đã khóa (Banned)</option>
+              </select>
+            </div>
+          </form>
+        </div>
+      ) : (
+        <div className="bg-white border border-stone-200 rounded-lg p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center mb-6">
+          <Avatar url={user.avatar_url} name={user.full_name} size={80} />
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-3 mb-2">
+              <h2 className="text-2xl font-bold text-stone-900">{user.full_name}</h2>
+
+              {user.status === 'inactive' && (
+                <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded bg-red-100 text-red-700">
+                  Đã khóa
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-4 text-sm text-stone-500">
+              <a href={`mailto:${user.email}`} className="flex items-center gap-1.5 hover:text-black transition-colors">
+                <Mail size={13} />{user.email}
+              </a>
+              {user.phone && (
+                <a href={`tel:${user.phone}`} className="flex items-center gap-1.5 hover:text-black transition-colors">
+                  <Phone size={13} />{user.phone}
+                </a>
+              )}
+              <span className="flex items-center gap-1.5">
+                <Calendar size={13} />
+                Tham gia {new Date(user.joined_at).toLocaleDateString("vi-VN")}
+              </span>
+            </div>
+          </div>
+
+        </div>
+      )}
 
       {/* Thống kê */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

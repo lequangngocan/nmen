@@ -1,9 +1,9 @@
 "use client";
 
-
+import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Package, ShoppingBag, Users, LogOut, Tag, FileText, Settings, BookOpen, MapPin } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Users, LogOut, Tag, FileText, Settings, BookOpen, MapPin, Ticket } from "lucide-react";
 
 // Các mục menu trong sidebar
 const menuItems = [
@@ -11,6 +11,7 @@ const menuItems = [
   { href: "/admin/categories", label: "Danh mục",   icon: Tag },
   { href: "/admin/products",   label: "Sản phẩm",   icon: Package },
   { href: "/admin/orders",     label: "Đơn hàng",   icon: ShoppingBag },
+  { href: "/admin/promo",      label: "Mã giảm giá", icon: Ticket },
   { href: "/admin/users",      label: "Khách hàng", icon: Users },
   { href: "/admin/news",       label: "Tin tức",    icon: FileText },
   { href: "/admin/pages",      label: "Trang tĩnh", icon: BookOpen },
@@ -21,14 +22,14 @@ const menuItems = [
 export default function AdminSidebar({ onClose }) {
   const pathname = usePathname();
   const router   = useRouter();
-  const adminUser = (() => {
-    if (typeof window === 'undefined') return null;
+  const [adminUser, setAdminUser] = React.useState(null);
+
+  React.useEffect(() => {
     try {
       const raw = localStorage.getItem('nmen_admin_user');
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
-  })();
-
+      if (raw) setAdminUser(JSON.parse(raw));
+    } catch { }
+  }, []);
   // Đăng xuất admin — chỉ xóa session admin, không đụng session client
   const handleLogout = () => {
     localStorage.removeItem("nmen_admin_token");

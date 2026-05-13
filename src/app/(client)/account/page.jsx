@@ -6,7 +6,7 @@ import { Edit3, MapPin, Plus, X, Star, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
-const API = "http://localhost:5000/api";
+const API = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api`;
 
 // Modal thêm / sửa địa chỉ
 function AddressModal({ address, onClose, onSave }) {
@@ -188,8 +188,9 @@ function AddressModal({ address, onClose, onSave }) {
   );
 }
 
+
 export default function AccountProfilePage() {
-  const { user, mounted } = useAuth();
+  const { user, setUser, mounted } = useAuth();
   const router = useRouter();
 
   const [addresses, setAddresses] = useState([]);
@@ -197,20 +198,55 @@ export default function AccountProfilePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
 
+  // Form Đổi mật khẩu Inline
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passForm, setPassForm] = useState({ old_password: "", new_password: "" });
+  const [savingPass, setSavingPass] = useState(false);
+
+  const handlePassChange = (e) => setPassForm({ ...passForm, [e.target.name]: e.target.value });
+
+  const savePassword = async (e) => {
+    e.preventDefault();
+    setSavingPass(true);
+    try {
+      const token = localStorage.getItem("nmen_token");
+      const res = await fetch(`${API}/auth/password`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(passForm)
+      });
+      const data = await res.json();
+      if (!res.ok) { alert(data.message); setSavingPass(false); return; }
+      alert("Đổi mật khẩu thành công!");
+      setIsChangingPassword(false);
+      setPassForm({ old_password: "", new_password: "" });
+    } catch {
+      alert("Lỗi kết nối server");
+    } finally {
+      setSavingPass(false);
+    }
+  };
+
+  // Profile Edit State
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ full_name: "", phone: "" });
+  const [savingProfile, setSavingProfile] = useState(false);
+
   useEffect(() => {
     if (mounted && !user) {
       router.push("/login");
     }
   }, [mounted, user, router]);
 
-  // dữ liệu user cứng — chưa có API edit profile nên để static
+  // Cập nhật userData dynamic
+  const joinDate = user?.joined_at ? new Date(user.joined_at) : new Date();
   const userData = {
     fullName: user?.full_name || "Người dùng NMen",
     email:    user?.email    || "",
-    tier:     user?.tier     || "Hạng Đồng",
-    points:   user?.points   || 0,
-    joined:   "Tháng 10, 2023",
-    avatarUrl: "/images/img_1e016e8b.jpg",
+    phone:    user?.phone    || "",
+
+    joined:   `Tháng ${joinDate.getMonth() + 1}, ${joinDate.getFullYear()}`,
+    avatarUrl: user?.avatar_url || "/images/img_1e016e8b.jpg",
   };
 
   const loadAddresses = () => {
@@ -223,7 +259,6 @@ export default function AccountProfilePage() {
   };
 
   useEffect(() => { 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadAddresses(); 
   }, []);
 
@@ -250,6 +285,43 @@ export default function AccountProfilePage() {
   const openEdit = (addr) => { setEditingAddress(addr); setModalOpen(true); };
   const handleModalSave = () => { setModalOpen(false); loadAddresses(); };
 
+  // Handlers for Profile Edit
+  const startEditProfile = () => {
+    setProfileForm({ full_name: user.full_name || "", phone: user.phone || "" });
+    setIsEditingProfile(true);
+  };
+
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
+    setProfileForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const saveProfile = async () => {
+    if (!profileForm.full_name.trim()) return alert("Tên không được để trống");
+    setSavingProfile(true);
+    try {
+      const token = localStorage.getItem("nmen_token");
+      const res = await fetch(`${API}/auth/me`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(profileForm)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "Lỗi cập nhật");
+      } else {
+        alert("Cập nhật thông tin thành công!");
+        setIsEditingProfile(false);
+        setUser(data.user);
+        localStorage.setItem("nmen_user", JSON.stringify(data.user));
+      }
+    } catch {
+      alert("Lỗi kết nối");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
   if (!mounted || !user) return <div className="min-h-screen"></div>;
 
   return (
@@ -268,30 +340,69 @@ export default function AccountProfilePage() {
         <div className="space-y-12">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 sm:gap-0">
             <div>
-              <span className="font-label text-xs font-bold uppercase tracking-[0.2em] text-stone-500 mb-2 block">Account Details</span>
-              <h1 className="font-headline text-4xl lg:text-5xl font-black tracking-tighter uppercase">My Profile</h1>
+              <span className="font-label text-xs font-bold uppercase tracking-[0.2em] text-stone-500 mb-2 block">Chi Tiết Tài Khoản</span>
+              <h1 className="font-headline text-4xl lg:text-5xl font-black tracking-tighter uppercase">Hồ Sơ Của Tôi</h1>
             </div>
-            <button className="bg-black text-white px-8 py-3 font-headline font-bold text-xs uppercase tracking-widest active:scale-95 transition-all hover:bg-stone-800">
-              Edit All
-            </button>
+            {!isEditingProfile ? (
+              <div className="flex gap-3">
+                <button onClick={() => setIsChangingPassword(true)} className="border border-stone-300 text-black px-8 py-3 font-headline font-bold text-xs uppercase tracking-widest active:scale-95 transition-all hover:border-black">
+                  Đổi mật khẩu
+                </button>
+                <button onClick={startEditProfile} className="bg-black text-white px-8 py-3 font-headline font-bold text-xs uppercase tracking-widest active:scale-95 transition-all hover:bg-stone-800">
+                  Chỉnh Sửa Hồ Sơ
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-3">
+                <button onClick={() => setIsEditingProfile(false)} disabled={savingProfile} className="border border-stone-300 px-6 py-3 font-headline font-bold text-xs uppercase tracking-widest active:scale-95 transition-all hover:border-black disabled:opacity-50">
+                  Hủy
+                </button>
+                <button onClick={saveProfile} disabled={savingProfile} className="bg-black text-white px-8 py-3 font-headline font-bold text-xs uppercase tracking-widest active:scale-95 transition-all hover:bg-stone-800 disabled:opacity-50">
+                  {savingProfile ? "Đang lưu..." : "Lưu Thay Đổi"}
+                </button>
+              </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10">
             <div className="space-y-2 group">
-              <label className="font-label text-[10px] uppercase tracking-widest text-stone-500 font-bold">Full Name</label>
-              <input type="text" defaultValue={userData.fullName} readOnly className="w-full bg-transparent border-t-0 border-x-0 border-b border-stone-300 px-0 py-2 font-body text-lg outline-none text-black cursor-default focus:ring-0 focus:border-black transition-colors" />
+              <label className="font-label text-[10px] uppercase tracking-widest text-stone-500 font-bold">Họ và tên *</label>
+              <input type="text" name="full_name" value={isEditingProfile ? profileForm.full_name : userData.fullName} onChange={handleProfileChange} readOnly={!isEditingProfile} className={`w-full bg-transparent border-t-0 border-x-0 border-b ${isEditingProfile ? "border-black focus:border-black" : "border-stone-300"} px-0 py-2 font-body text-lg outline-none text-black transition-colors`} />
             </div>
             <div className="space-y-2 group">
-              <label className="font-label text-[10px] uppercase tracking-widest text-stone-500 font-bold">Email Address</label>
-              <input type="email" defaultValue={userData.email} readOnly className="w-full bg-transparent border-t-0 border-x-0 border-b border-stone-300 px-0 py-2 font-body text-lg outline-none text-black cursor-default focus:ring-0 focus:border-black transition-colors" />
+              <label className="font-label text-[10px] uppercase tracking-widest text-stone-500 font-bold">Địa chỉ Email</label>
+              <input type="email" value={userData.email} readOnly className="w-full bg-transparent border-t-0 border-x-0 border-b border-stone-300 px-0 py-2 font-body text-lg outline-none text-stone-400 cursor-not-allowed transition-colors" />
             </div>
-            <div className="space-y-2">
-              <label className="font-label text-[10px] uppercase tracking-widest text-stone-500 font-bold">Membership Status</label>
-              <div className="flex items-center gap-2 py-2">
-                <span className="bg-stone-800 text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">{userData.tier}</span>
-                <span className="text-xs text-stone-500 font-medium italic underline underline-offset-4 cursor-pointer hover:text-black">View Benefits</span>
+            <div className="space-y-2 group">
+              <label className="font-label text-[10px] uppercase tracking-widest text-stone-500 font-bold">Số điện thoại</label>
+              <input type="tel" name="phone" value={isEditingProfile ? profileForm.phone : userData.phone} onChange={handleProfileChange} readOnly={!isEditingProfile} placeholder="09xx..." className={`w-full bg-transparent border-t-0 border-x-0 border-b ${isEditingProfile ? "border-black focus:border-black" : "border-stone-300"} px-0 py-2 font-body text-lg outline-none text-black transition-colors`} />
+            </div>
+
+
+            {/* Form Đổi Mật Khẩu Nội Tuyến */}
+            {isChangingPassword && (
+              <div className="lg:col-span-3 bg-stone-50 p-6 lg:p-8 border border-stone-200 mt-4">
+                <h3 className="font-headline font-bold uppercase tracking-tight mb-6 text-black">Đổi mật khẩu</h3>
+                <form onSubmit={savePassword} className="space-y-4 max-w-sm">
+                  <div>
+                    <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">Mật khẩu cũ</label>
+                    <input type="password" name="old_password" value={passForm.old_password} onChange={handlePassChange} className="w-full border-b border-stone-300 py-2.5 outline-none bg-transparent focus:border-black text-black" required />
+                  </div>
+                  <div>
+                    <label className="block font-label text-[10px] uppercase tracking-widest text-stone-500 mb-2">Mật khẩu mới</label>
+                    <input type="password" name="new_password" value={passForm.new_password} onChange={handlePassChange} className="w-full border-b border-stone-300 py-2.5 outline-none bg-transparent focus:border-black text-black" required minLength={6} />
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <button type="submit" disabled={savingPass} className="bg-black text-white px-6 py-2.5 font-headline text-xs font-bold uppercase tracking-widest disabled:opacity-50 hover:bg-stone-800">
+                      Lưu mật khẩu
+                    </button>
+                    <button type="button" onClick={() => setIsChangingPassword(false)} className="border border-stone-300 px-6 py-2.5 font-headline text-xs font-bold uppercase tracking-widest text-black hover:border-black">
+                      Hủy
+                    </button>
+                  </div>
+                </form>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -301,7 +412,7 @@ export default function AccountProfilePage() {
           {/* Avatar */}
           <div className="md:col-span-4 bg-stone-200 p-8 lg:p-12 space-y-8">
             <div>
-              <span className="font-label text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500 mb-2 block">Identity & Origin</span>
+              <span className="font-label text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500 mb-2 block">Ảnh Đại Diện</span>
               <div className="aspect-square bg-stone-300 relative overflow-hidden group">
                 <Image src={userData.avatarUrl} alt="Profile" fill className="object-cover grayscale contrast-125 hover:scale-105 transition-transform duration-700" />
                 <div className="absolute bottom-0 right-0 p-4 bg-black text-white cursor-pointer active:scale-95 transition-all hover:bg-stone-800">
@@ -394,21 +505,7 @@ export default function AccountProfilePage() {
               </div>
             )}
 
-            {/* Điểm thưởng */}
-            <div className="relative bg-black p-8 lg:p-12 overflow-hidden text-white shadow-xl mt-4">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-stone-800 opacity-50 -mr-20 -mt-20 rotate-45 pointer-events-none"></div>
-              <div className="relative z-10 space-y-6">
-                <h4 className="font-headline text-2xl font-black tracking-tighter uppercase">Điểm Thưởng Editorial</h4>
-                <div className="flex items-end gap-2">
-                  <span className="text-5xl font-headline font-black">{userData.points.toLocaleString("vi-VN")}</span>
-                  <span className="font-label text-[10px] text-white/60 uppercase tracking-widest mb-2">Điểm</span>
-                </div>
-                <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
-                  <div className="w-[75%] h-full bg-white rounded-full"></div>
-                </div>
-                <p className="text-white/60 font-label text-[10px] uppercase tracking-widest">Cần 250 điểm để nhận thưởng tiếp theo</p>
-              </div>
-            </div>
+
 
           </div>
         </div>

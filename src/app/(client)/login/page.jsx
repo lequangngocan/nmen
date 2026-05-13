@@ -24,14 +24,17 @@ export default function LoginPage() {
     setError("");
     setSubmitting(true);
 
-    const data = await login(formData.email, formData.password);
-
-    setSubmitting(false);
-
-    if (data.token) {
-      router.push("/");
-    } else {
-      setError(data.message || "Đăng nhập thất bại");
+    try {
+      const data = await login(formData.email, formData.password);
+      if (data.token) {
+        router.push("/");
+      } else {
+        setError(data.message || "Đăng nhập thất bại");
+      }
+    } catch (err) {
+      setError(err.message || "Đăng nhập thất bại");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -140,14 +143,14 @@ export default function LoginPage() {
           </form>
 
           {/* Social Divider */}
-          <div className="relative my-10 flex items-center">
+          <div className="relative my-10 flex items-center hidden">
             <div className="flex-grow border-t border-stone-200"></div>
             <span className="flex-shrink mx-4 font-label text-[10px] uppercase tracking-widest text-stone-400">HOẶC TIẾP TỤC VỚI</span>
             <div className="flex-grow border-t border-stone-200"></div>
           </div>
 
           {/* Nút giả lập Đăng nhập MXH */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 hidden">
             <button 
               onClick={() => alert("Chức năng đang bảo trì!")}
               className="flex items-center justify-center space-x-2 py-4 border border-stone-300 hover:bg-stone-100 transition-colors font-label text-[10px] uppercase tracking-widest text-black"

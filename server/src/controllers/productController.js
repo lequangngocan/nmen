@@ -7,32 +7,7 @@ const toSlug = (str) =>
     .replace(/[^a-z0-9\s]/g, '')
     .trim().replace(/\s+/g, '-');
 
-// Kiểm tra SKU đã tồn tại trong products hoặc product_variants chưa
-const checkSkuExists = async (sku, excludeProductId = null, excludeVariantId = null) => {
-  if (!sku) return false;
-  
-  // Check products
-  let pQuery = 'SELECT id FROM products WHERE sku = ?';
-  let pParams = [sku];
-  if (excludeProductId) {
-    pQuery += ' AND id != ?';
-    pParams.push(excludeProductId);
-  }
-  const [pRows] = await pool.query(pQuery, pParams);
-  if (pRows.length > 0) return true;
 
-  // Check variants
-  let vQuery = 'SELECT id FROM product_variants WHERE sku = ?';
-  let vParams = [sku];
-  if (excludeVariantId) {
-    vQuery += ' AND id != ?';
-    vParams.push(excludeVariantId);
-  }
-  const [vRows] = await pool.query(vQuery, vParams);
-  if (vRows.length > 0) return true;
-
-  return false;
-};
 
 // lấy danh sách sản phẩm, có thể lọc theo danh mục và tìm kiếm
 const getProducts = async (req, res) => {
@@ -70,7 +45,7 @@ const getProducts = async (req, res) => {
       params.push(...colors);
     }
     if (maxPrice) {
-      query += ' AND p.price <= ?';
+      query += ' AND COALESCE(p.sale_price, p.price) <= ?';
       params.push(Number(maxPrice));
     }
 
@@ -187,9 +162,9 @@ const createProduct = async (req, res) => {
       return res.status(400).json({ message: 'Vui lòng thêm ít nhất 1 hình ảnh' });
     }
     if (sku) {
-      const skuExists = await checkSkuExists(sku);
-      if (skuExists) {
-        return res.status(400).json({ message: 'SKU đã tồn tại trong hệ thống' });
+      const [skuRows] = await pool.query('SELECT id FROM products WHERE sku = ?', [sku]);
+      if (skuRows.length > 0) {
+        return res.status(400).json({ message: 'SKU đã tồn tại' });
       }
     }
 
@@ -242,14 +217,14 @@ const updateProduct = async (req, res) => {
       fields.push('name = ?'); params.push(name);
     }
     if (slug !== undefined) { fields.push('slug = ?'); params.push(slug); }
-    if (sku !== undefined) { 
+    if (sku !== undefined) {
       if (sku) {
-        const skuExists = await checkSkuExists(sku, id, null);
-        if (skuExists) {
-          return res.status(400).json({ message: 'SKU đã tồn tại trong hệ thống' });
+        const [skuRows] = await pool.query('SELECT id FROM products WHERE sku = ? AND id != ?', [sku, id]);
+        if (skuRows.length > 0) {
+          return res.status(400).json({ message: 'SKU đã tồn tại' });
         }
       }
-      fields.push('sku = ?'); params.push(sku); 
+      fields.push('sku = ?'); params.push(sku);
     }
     if (price !== undefined) {
       if (isNaN(price) || Number(price) < 0) return res.status(400).json({ message: 'Giá sản phẩm không hợp lệ' });
@@ -258,10 +233,9 @@ const updateProduct = async (req, res) => {
     if (sale_price !== undefined) {
       if (sale_price !== null && sale_price !== '') {
         if (isNaN(sale_price) || Number(sale_price) < 0) return res.status(400).json({ message: 'Giá khuyến mãi không hợp lệ' });
-        
-        // So sánh với giá gốc nếu có cập nhật giá gốc
+        // chỉ kiểm tra khi cùng cập nhật giá gốc
         if (price !== undefined && Number(sale_price) >= Number(price)) {
-           return res.status(400).json({ message: 'Giá khuyến mãi phải nhỏ hơn giá gốc' });
+          return res.status(400).json({ message: 'Giá khuyến mãi phải nhỏ hơn giá gốc' });
         }
         fields.push('sale_price = ?'); params.push(sale_price);
       } else {
@@ -333,9 +307,9 @@ const addVariant = async (req, res) => {
       return res.status(400).json({ message: 'Số lượng tồn kho không hợp lệ' });
     }
 
-    const skuExists = await checkSkuExists(sku);
-    if (skuExists) {
-      return res.status(400).json({ message: 'SKU đã tồn tại trong hệ thống' });
+    const [skuRows] = await pool.query('SELECT id FROM product_variants WHERE sku = ?', [sku]);
+    if (skuRows.length > 0) {
+      return res.status(400).json({ message: 'SKU đã tồn tại' });
     }
 
     const [result] = await pool.query(
@@ -367,4 +341,46 @@ const deleteVariant = async (req, res) => {
   }
 };
 
-module.exports = { getProducts, getProductById, getProductBySlug, createProduct, updateProduct, deleteProduct, addVariant, deleteVariant };
+// cập nhật biến thể
+const updateVariant = async (req, res) => {
+  try {
+    const { sku, color_name, color_hex, size, stock } = req.body;
+    const { id, vid } = req.params;
+
+    const fields = [];
+    const params = [];
+
+    if (sku !== undefined) {
+      if (sku) {
+        const [skuRows] = await pool.query('SELECT id FROM product_variants WHERE sku = ? AND id != ?', [sku, vid]);
+        if (skuRows.length > 0) return res.status(400).json({ message: 'SKU đã tồn tại' });
+      }
+      fields.push('sku = ?'); params.push(sku);
+    }
+    if (color_name !== undefined) { fields.push('color_name = ?'); params.push(color_name); }
+    if (color_hex !== undefined) { fields.push('color_hex = ?'); params.push(color_hex); }
+    if (size !== undefined) { fields.push('size = ?'); params.push(size); }
+    if (stock !== undefined) {
+      if (isNaN(stock) || Number(stock) < 0) return res.status(400).json({ message: 'Số lượng tồn kho không hợp lệ' });
+      fields.push('stock = ?'); params.push(stock);
+    }
+
+    if (fields.length > 0) {
+      params.push(vid, id);
+      const [result] = await pool.query(
+        `UPDATE product_variants SET ${fields.join(', ')} WHERE id = ? AND product_id = ?`,
+        params
+      );
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Variant không tồn tại' });
+      }
+    }
+
+    res.json({ message: 'Cập nhật variant thành công' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
+};
+
+module.exports = { getProducts, getProductById, getProductBySlug, createProduct, updateProduct, deleteProduct, addVariant, updateVariant, deleteVariant };

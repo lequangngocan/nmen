@@ -2,16 +2,18 @@ const pool = require('../db');
 
 // chuyển danh sách phẳng thành dạng cây (parent - children)
 const buildTree = (rows) => {
-  const map = {};
   const roots = [];
-  rows.forEach((r) => { map[r.id] = { ...r, children: [] }; });
-  rows.forEach((r) => {
-    if (r.parent_id && map[r.parent_id]) {
-      map[r.parent_id].children.push(map[r.id]);
-    } else {
-      roots.push(map[r.id]);
+  for (let i = 0; i < rows.length; i++) {
+    rows[i].children = [];
+    for (let j = 0; j < rows.length; j++) {
+      if (rows[j].parent_id === rows[i].id) {
+        rows[i].children.push(rows[j]);
+      }
     }
-  });
+    if (!rows[i].parent_id) {
+      roots.push(rows[i]);
+    }
+  }
   return roots;
 };
 

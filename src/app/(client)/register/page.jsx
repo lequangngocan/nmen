@@ -70,10 +70,10 @@ export default function RegisterPage() {
               Tài khoản <strong>{formData.fullName}</strong> đã được tạo thành công. Bạn đã sẵn sàng để mua sắm cùng NMen.
             </p>
             <button
-              onClick={() => router.push("/login")}
+              onClick={() => router.push("/account")}
               className="w-full bg-black text-white font-headline font-bold text-xs uppercase tracking-[0.2em] py-4 hover:bg-stone-800 transition-colors"
             >
-              Tới Trang Đăng Nhập
+              Tới Trang Tài Khoản
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { auth, adminOnly } = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
+const adminOnly = require('../middleware/adminOnly');
 const { getSettings, updateSettings } = require('../controllers/settingController');
 
 // Public

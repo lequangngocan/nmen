@@ -17,14 +17,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `nmen`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `nmen` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
-
-USE `nmen`;
-
---
 -- Table structure for table `categories`
 --
 
@@ -44,7 +36,7 @@ CREATE TABLE `categories` (
   UNIQUE KEY `uq_cat_slug` (`slug`),
   KEY `fk_cat_parent` (`parent_id`),
   CONSTRAINT `fk_cat_parent` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -57,7 +49,7 @@ INSERT INTO `categories` VALUES
 (1,7,'Áo khoác','ao-khoac',0,'active','Áo khoác nam các loại','2026-04-27 06:29:51'),
 (2,7,'Áo sơ mi','ao-so-mi',0,'active','Áo sơ mi nam form rộng và slim','2026-04-27 06:29:51'),
 (3,7,'Áo len','ao-len',0,'active','Áo len, áo sweater nam','2026-04-27 06:29:51'),
-(4,NULL,'Quần','quan',0,'active','Quần khaki, chino, jeans','2026-04-27 06:29:51'),
+(4,NULL,'Quần','quan',2,'active','Quần khaki, chino, jeans','2026-04-27 06:29:51'),
 (5,NULL,'Giày','giay',0,'active','Giày da, sneaker, loafer','2026-04-27 06:29:51'),
 (6,NULL,'Phụ kiện','phu-kien',0,'active','Thắt lưng, ví, kính mắt','2026-04-27 06:29:51'),
 (7,NULL,'Áo','ao',0,'active',NULL,'2026-04-28 09:36:47');
@@ -153,7 +145,7 @@ CREATE TABLE `loyalty_transactions` (
   KEY `fk_lt_order` (`order_id`),
   CONSTRAINT `fk_lt_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_lt_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -169,7 +161,24 @@ INSERT INTO `loyalty_transactions` VALUES
 (4,5,5,'earn',65,'Tích điểm đơn NM-45318','2026-04-27 06:29:51'),
 (5,1,NULL,'adjust',1000,'Điểm khởi đầu thành viên','2026-04-27 06:29:51'),
 (6,1,7,'earn',400,'Tích điểm đơn NM-69154','2026-04-28 04:48:23'),
-(7,1,11,'earn',400,'Tích điểm đơn NM-15382','2026-04-28 09:19:22');
+(7,1,11,'earn',400,'Tích điểm đơn NM-15382','2026-04-28 09:19:22'),
+(8,7,15,'earn',350,'Tích điểm đơn NM-88528','2026-05-07 09:30:37'),
+(9,7,16,'earn',400,'Tích điểm đơn NM-15466','2026-05-07 09:34:58'),
+(10,7,17,'earn',350,'Tích điểm đơn NM-92352','2026-05-07 09:49:14'),
+(11,7,18,'earn',220,'Tích điểm đơn NM-32339','2026-05-07 09:52:20'),
+(12,7,19,'earn',220,'Tích điểm đơn NM-97746','2026-05-07 09:53:27'),
+(13,7,20,'earn',400,'Tích điểm đơn NM-65958','2026-05-07 09:56:44'),
+(14,7,21,'earn',400,'Tích điểm đơn NM-39229','2026-05-07 10:10:18'),
+(15,7,22,'earn',400,'Tích điểm đơn NM-91369','2026-05-11 15:26:19'),
+(16,7,23,'earn',150,'Tích điểm đơn NM-61099','2026-05-11 15:46:06'),
+(17,7,24,'earn',350,'Tích điểm đơn NM-41368','2026-05-11 15:48:14'),
+(18,7,25,'earn',1100,'Tích điểm đơn NM-25459','2026-05-11 15:48:22'),
+(19,7,26,'earn',150,'Tích điểm đơn NM-91832','2026-05-11 15:49:34'),
+(20,7,27,'earn',150,'Tích điểm đơn NM-45637','2026-05-11 15:59:57'),
+(21,7,31,'earn',150,'Tích điểm đơn NM-12397','2026-05-11 16:29:10'),
+(22,7,32,'earn',150,'Tích điểm đơn NM-21383','2026-05-11 16:29:15'),
+(23,7,34,'earn',220,'Tích điểm đơn NM-31640','2026-05-11 16:32:43'),
+(24,7,35,'earn',150,'Tích điểm đơn NM-95349','2026-05-11 16:36:26');
 /*!40000 ALTER TABLE `loyalty_transactions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -236,7 +245,7 @@ CREATE TABLE `order_items` (
   CONSTRAINT `fk_oi_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_oi_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_oi_variant` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -261,7 +270,33 @@ INSERT INTO `order_items` VALUES
 (13,8,2,11,'Áo Sơ mi Form Rộng','Đen Nhám','#1a1c1c','L',NULL,1850000,1,1500000,1500000),
 (14,9,3,18,'Quần Khaki Chino','Be Đất','#c8b89a','28',NULL,2200000,1,2200000,2200000),
 (15,10,3,18,'Quần Khaki Chino','Be Đất','#c8b89a','28',NULL,2200000,1,2200000,2200000),
-(16,11,1,7,'Áo Blazer Linen Phom Rộng','Kem Cát','#c8b89a','L','/uploads/products/1777271513807-uzbnschft8.png',4500000,1,4000000,4000000);
+(16,11,1,7,'Áo Blazer Linen Phom Rộng','Kem Cát','#c8b89a','L','/uploads/products/1777271513807-uzbnschft8.png',4500000,1,4000000,4000000),
+(17,8,5,33,'Áo len Cổ tròn Anthracite','Anthracite','#3d3d3d','S',NULL,2800000,1,2800000,2800000),
+(18,12,1,7,'Áo Blazer Linen Phom Rộng','Kem Cát','#c8b89a','L','/uploads/products/1777271513807-uzbnschft8.png',4500000,1,4000000,4000000),
+(19,13,2,11,'Áo Sơ mi Form Rộng','Đen Nhám','#1a1c1c','L',NULL,1850000,1,1500000,1500000),
+(20,14,2,10,'Áo Sơ mi Form Rộng','Đen Nhám','#1a1c1c','M',NULL,1850000,1,1500000,1500000),
+(21,14,4,25,'Giày da Loafer','Đen','#1a1c1c','39',NULL,3900000,1,3500000,3500000),
+(22,15,4,27,'Giày da Loafer','Đen','#1a1c1c','41',NULL,3900000,1,3500000,3500000),
+(23,16,1,1,'Áo Blazer Linen Phom Rộng','Xám Đen','#2f2f2f','S','/uploads/products/1777271513807-uzbnschft8.png',4500000,1,4000000,4000000),
+(24,17,4,27,'Giày da Loafer','Đen','#1a1c1c','41',NULL,3900000,1,3500000,3500000),
+(25,18,3,23,'Quần Khaki Chino','Xám Than','#3d3d3d','30',NULL,2200000,1,2200000,2200000),
+(26,19,3,18,'Quần Khaki Chino','Be Đất','#c8b89a','28',NULL,2200000,1,2200000,2200000),
+(27,20,1,1,'Áo Blazer Linen Phom Rộng','Xám Đen','#2f2f2f','S','/uploads/products/1777271513807-uzbnschft8.png',4500000,1,4000000,4000000),
+(28,21,1,1,'Áo Blazer Linen Phom Rộng','Xám Đen','#2f2f2f','S','/uploads/products/1777271513807-uzbnschft8.png',4500000,1,4000000,4000000),
+(29,22,1,2,'Áo Blazer Linen Phom Rộng','Xám Đen','#2f2f2f','M','/uploads/products/1777271513807-uzbnschft8.png',4500000,1,4000000,4000000),
+(30,23,2,17,'Áo Sơ mi Form Rộng','Nâu Đất','#4a3728','M',NULL,1850000,1,1500000,1500000),
+(31,24,4,31,'Giày da Loafer','Nâu','#4a3728','41',NULL,3900000,1,3500000,3500000),
+(32,25,6,41,'Áo khoác dạ dáng dài','Đen','#1a1c1c','M',NULL,12500000,1,11000000,11000000),
+(33,26,2,10,'Áo Sơ mi Form Rộng','Đen Nhám','#1a1c1c','M',NULL,1850000,1,1500000,1500000),
+(34,27,2,9,'Áo Sơ mi Form Rộng','Đen Nhám','#1a1c1c','S',NULL,1850000,1,1500000,1500000),
+(35,28,1,3,'Áo Blazer Linen Phom Rộng','Xám Đen','#2f2f2f','L','/uploads/products/1777271513807-uzbnschft8.png',4500000,1,4000000,4000000),
+(36,29,6,42,'Áo khoác dạ dáng dài','Đen','#1a1c1c','L',NULL,12500000,1,11000000,11000000),
+(37,30,3,20,'Quần Khaki Chino','Be Đất','#c8b89a','32',NULL,2200000,1,2200000,2200000),
+(38,31,2,10,'Áo Sơ mi Form Rộng','Đen Nhám','#1a1c1c','M',NULL,1850000,1,1500000,1500000),
+(39,32,2,11,'Áo Sơ mi Form Rộng','Đen Nhám','#1a1c1c','L',NULL,1850000,1,1500000,1500000),
+(40,33,3,20,'Quần Khaki Chino','Be Đất','#c8b89a','32',NULL,2200000,1,2200000,2200000),
+(41,34,3,19,'Quần Khaki Chino','Be Đất','#c8b89a','30',NULL,2200000,1,2200000,2200000),
+(42,35,2,10,'Áo Sơ mi Form Rộng','Đen Nhám','#1a1c1c','M',NULL,1850000,1,1500000,1500000);
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -309,7 +344,7 @@ CREATE TABLE `orders` (
   CONSTRAINT `fk_order_commune` FOREIGN KEY (`shipping_commune_id`) REFERENCES `communes` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_order_province` FOREIGN KEY (`shipping_province_id`) REFERENCES `provinces` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_order_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -326,10 +361,34 @@ INSERT INTO `orders` VALUES
 (5,'NM-45318',5,'Hoàng Quân E','hoangquan@example.com','+84965432109','321 Trần Hưng Đạo, Quận 5',NULL,'TP.HCM',NULL,NULL,'Sepay','paid',NULL,NULL,0,6700000,0,6500000,NULL,NULL,'delivered',65,0,'2026-04-27 06:29:51','2026-04-28 04:21:46'),
 (6,'NM-38098',NULL,'NMen Admin','admin@nmen.vn','123456789','Hà Đông','Quận Cái Răng','Thành phố Cần Thơ',5,39,'COD','pending',NULL,NULL,0,7500000,0,7500000,NULL,NULL,'pending',750,0,'2026-04-28 04:24:04','2026-04-28 04:24:04'),
 (7,'NM-69154',1,'Nguyễn Văn A','nguyenvana@example.com','+84987654321','Khu vực Sảnh A, Tòa ICT, Quận Cầu Giấy','Quận Hải Châu','Thành phố Đà Nẵng',3,15,'COD','pending',NULL,NULL,0,4000000,0,4000000,NULL,NULL,'delivered',400,0,'2026-04-28 04:48:23','2026-04-28 09:31:30'),
-(8,'NM-99093',NULL,'Ngọc An Lê Quang','lequangngocan@gmail.com','123456789','Hà Đông','Quận Liên Chiểu','Thành phố Đà Nẵng',3,13,'COD','pending',NULL,NULL,0,1500000,0,1500000,'test',NULL,'pending',150,0,'2026-04-28 08:03:43','2026-04-28 08:03:43'),
+(8,'NM-99093',NULL,'Ngọc An Lê Quang','lequangngocan@gmail.com','123456789','Hà Đông','Quận Liên Chiểu','Thành phố Đà Nẵng',3,13,'COD','pending',NULL,NULL,0,4300000,0,4300000,'test',NULL,'pending',430,0,'2026-04-28 08:03:43','2026-04-28 15:52:54'),
 (9,'NM-52815',NULL,'Ngọc An Lê Quang','lequangngocan@gmail.com','123456789','Hà Đông','Quận Hải Châu','Thành phố Đà Nẵng',3,15,'COD','pending',NULL,NULL,0,2200000,0,2200000,NULL,NULL,'shipping',220,0,'2026-04-28 08:20:00','2026-04-28 09:57:06'),
 (10,'NM-15180',NULL,'Ngọc An Lê Quang','lequangngocan@gmail.com','123456789','Hà Đông','Quận Bình Thuỷ','Thành phố Cần Thơ',5,38,'COD','pending',NULL,NULL,0,2200000,0,2200000,NULL,'Khách hàng tự hủy','cancelled',220,0,'2026-04-28 09:05:09','2026-04-28 09:16:48'),
-(11,'NM-15382',1,'Nguyễn Văn A','nguyenvana@example.com','+84987654321','Khu vực Sảnh A, Tòa ICT, Quận Cầu Giấy','Quận Hải Châu','Thành phố Đà Nẵng',3,15,'COD','pending',NULL,NULL,0,4000000,0,4000000,NULL,NULL,'pending',400,0,'2026-04-28 09:19:22','2026-04-28 09:19:22');
+(11,'NM-15382',1,'Nguyễn Văn A','nguyenvana@example.com','+84987654321','Khu vực Sảnh A, Tòa ICT, Quận Cầu Giấy','Quận Hải Châu','Thành phố Đà Nẵng',3,15,'COD','refunded',NULL,NULL,0,4000000,0,4000000,NULL,NULL,'processing',400,0,'2026-04-28 09:19:22','2026-04-28 15:52:28'),
+(12,'NM-65332',NULL,'Ngọc An Lê Quang','lequangngocan@gmail.com','123456789','Hà Đông','Quận Cái Răng','Thành phố Cần Thơ',5,39,'Sepay','pending',NULL,NULL,0,4000000,0,4000000,NULL,NULL,'pending',400,0,'2026-05-07 08:38:29','2026-05-07 08:38:29'),
+(13,'NM-69957',NULL,'Ngọc An Lê Quang','lequangngocan@gmail.com','123456789','Hà Đông','Quận Cái Răng','Thành phố Cần Thơ',5,39,'Sepay','pending',NULL,'WELCOME10',150000,1500000,0,1350000,NULL,NULL,'pending',135,0,'2026-05-07 09:04:41','2026-05-07 09:04:41'),
+(14,'NM-84042',NULL,'Ngọc An Lê Quang','lequangngocan@gmail.com','123456789','Hà Đông','Quận Tây Hồ','Thành phố Hà Nội',1,3,'Sepay','pending',NULL,'NMEN200K',200000,5000000,0,4800000,NULL,NULL,'pending',480,0,'2026-05-07 09:23:01','2026-05-07 09:23:01'),
+(15,'NM-88528',7,'Nguyễn Văn A','lequangngocan@gmail.com','123456789','Hà Đông','Quận Cái Răng','Thành phố Cần Thơ',5,39,'Sepay','pending',NULL,NULL,0,3500000,0,3500000,NULL,NULL,'pending',350,0,'2026-05-07 09:30:37','2026-05-07 09:30:37'),
+(16,'NM-15466',7,'Nguyễn Văn A','lequangngocan@gmail.com','123456789','Hà Đông','Quận Cái Răng','Thành phố Cần Thơ',5,39,'Sepay','pending',NULL,NULL,0,4000000,0,4000000,NULL,NULL,'pending',400,0,'2026-05-07 09:34:58','2026-05-07 09:34:58'),
+(17,'NM-92352',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','Quận Hoàn Kiếm','Thành phố Hà Nội',1,2,'Sepay','pending',NULL,NULL,0,3500000,0,3500000,NULL,NULL,'pending',350,0,'2026-05-07 09:49:14','2026-05-07 09:49:14'),
+(18,'NM-32339',7,'Nguyễn Văn A','lequangngocan@gmail.com','123456789','Hà Đông','Quận Cái Răng','Thành phố Cần Thơ',5,39,'Sepay','pending',NULL,NULL,0,2200000,0,2200000,NULL,NULL,'pending',220,0,'2026-05-07 09:52:20','2026-05-07 09:52:20'),
+(19,'NM-97746',7,'Nguyễn Văn A','lequangngocan@gmail.com','123456789','Hà Đông','Quận Bình Thuỷ','Thành phố Cần Thơ',5,38,'Sepay','pending',NULL,NULL,0,2200000,0,2200000,NULL,NULL,'pending',220,0,'2026-05-07 09:53:27','2026-05-07 09:53:27'),
+(20,'NM-65958',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','Quận Long Biên','Thành phố Hà Nội',1,4,'Sepay','paid','SEPAY_SIMULATE_123',NULL,0,4000000,0,4000000,'test',NULL,'confirmed',400,0,'2026-05-07 09:56:44','2026-05-07 09:59:49'),
+(21,'NM-39229',7,'Nguyễn Văn A','lequangngocan@gmail.com','123456789','Hà Đông','Quận Cái Răng','Thành phố Cần Thơ',5,39,'Sepay','pending',NULL,NULL,0,4000000,0,4000000,NULL,NULL,'pending',400,0,'2026-05-07 10:10:18','2026-05-07 10:10:18'),
+(22,'NM-91369',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','Quận Thanh Xuân','Thành phố Hà Nội',1,9,'Sepay','failed',NULL,NULL,0,4000000,0,4000000,NULL,NULL,'pending',400,0,'2026-05-11 15:26:19','2026-05-11 15:26:25'),
+(23,'NM-61099',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','Quận Thanh Xuân','Thành phố Hà Nội',1,9,'COD','paid',NULL,NULL,0,1500000,0,1500000,NULL,NULL,'confirmed',150,0,'2026-05-11 15:46:06','2026-05-11 15:46:47'),
+(24,'NM-41368',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','','Thành phố Hà Nội',1,NULL,'COD','pending',NULL,NULL,0,3500000,0,3500000,NULL,NULL,'pending',350,0,'2026-05-11 15:48:14','2026-05-11 15:48:14'),
+(25,'NM-25459',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','','Thành phố Hà Nội',1,NULL,'Sepay','failed',NULL,NULL,0,11000000,0,11000000,NULL,NULL,'pending',1100,0,'2026-05-11 15:48:22','2026-05-11 15:48:38'),
+(26,'NM-91832',7,'Nguyễn Văn A','lequangngocan@gmail.com','123456789','Hà Đông','','Thành phố Cần Thơ',5,NULL,'Sepay','paid',NULL,NULL,0,1500000,0,1500000,NULL,NULL,'confirmed',150,0,'2026-05-11 15:49:34','2026-05-11 15:54:14'),
+(27,'NM-45637',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','Quận Thanh Xuân','Thành phố Hà Nội',1,9,'Sepay','failed',NULL,NULL,0,1500000,0,1500000,NULL,'Thanh toán thất bại hoặc bị hủy','cancelled',150,0,'2026-05-11 15:59:57','2026-05-11 16:14:18'),
+(28,'NM-90936',NULL,'dfvd v','dfv','dfv','dfvdfv','Quận Ngũ Hành Sơn','Thành phố Đà Nẵng',3,17,'COD','pending',NULL,NULL,0,4000000,0,4000000,NULL,NULL,'pending',400,0,'2026-05-11 16:22:40','2026-05-11 16:22:40'),
+(29,'NM-22389',NULL,'fvdfv sdfvd','lequangngocan@gmail.com','123456789','Hà Đông','Quận Cái Răng','Thành phố Cần Thơ',5,39,'Sepay','paid',NULL,NULL,0,11000000,0,11000000,NULL,NULL,'confirmed',1100,0,'2026-05-11 16:22:57','2026-05-11 16:23:04'),
+(30,'NM-27979',NULL,'Ngọc An Lê Quang','lequangngocan@gmail.com','123456789','Hà Đông','Quận Đống Đa','Thành phố Hà Nội',1,6,'Sepay','failed',NULL,NULL,0,2200000,0,2200000,NULL,'Thanh toán thất bại hoặc bị hủy','cancelled',220,0,'2026-05-11 16:23:19','2026-05-11 16:23:22'),
+(31,'NM-12397',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','Quận Thanh Xuân','Thành phố Hà Nội',1,9,'COD','pending',NULL,NULL,0,1500000,0,1500000,NULL,NULL,'pending',150,0,'2026-05-11 16:29:10','2026-05-11 16:29:10'),
+(32,'NM-21383',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','Quận Thanh Xuân','Thành phố Hà Nội',1,9,'Sepay','failed',NULL,NULL,0,1500000,0,1500000,NULL,'Thanh toán thất bại hoặc bị hủy','cancelled',150,0,'2026-05-11 16:29:15','2026-05-11 16:29:23'),
+(33,'NM-56409',NULL,'Ngọc An Lê Quang','lequangngocan@gmail.com','123456789','Hà Đông','Quận Hải Châu','Thành phố Đà Nẵng',3,15,'Sepay','failed',NULL,NULL,0,2200000,0,2200000,NULL,'Thanh toán thất bại hoặc bị hủy','cancelled',220,0,'2026-05-11 16:32:15','2026-05-11 16:32:21'),
+(34,'NM-31640',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','Quận Thanh Xuân','Thành phố Hà Nội',1,9,'Sepay','paid',NULL,NULL,0,2200000,0,2200000,NULL,NULL,'confirmed',220,0,'2026-05-11 16:32:43','2026-05-11 16:32:50'),
+(35,'NM-95349',7,'Lê Quang Ngọc An','lequangngocan@gmail.com','0387210034','Nghĩa Lộ','Quận Thanh Xuân','Thành phố Hà Nội',1,9,'Sepay','failed',NULL,NULL,0,1500000,0,1500000,NULL,'Thanh toán thất bại hoặc bị hủy','cancelled',150,0,'2026-05-11 16:36:26','2026-05-11 16:36:33');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -367,6 +426,52 @@ INSERT INTO `pages` VALUES
 (5,'Hỏi đáp (FAQs)','faq','<h3>1. Làm sao để đặt hàng?</h3><p>Bạn có thể chọn sản phẩm và thêm vào giỏ hàng, sau đó tiến hành thanh toán.</p><h3>2. Thời gian giao hàng là bao lâu?</h3><p>Thời gian giao hàng từ 2-5 ngày tùy khu vực.</p>',1,'2026-04-28 10:07:42','2026-04-28 10:07:42'),
 (6,'Chính sách vận chuyển','van-chuyen','<p>Chúng tôi miễn phí vận chuyển cho đơn hàng trên 1.000.000đ.</p>',1,'2026-04-28 10:07:42','2026-04-28 10:07:42');
 /*!40000 ALTER TABLE `pages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `payment_transactions`
+--
+
+DROP TABLE IF EXISTS `payment_transactions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `payment_transactions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` int(11) DEFAULT NULL,
+  `gateway` varchar(50) NOT NULL DEFAULT 'Sepay',
+  `reference_number` varchar(100) NOT NULL,
+  `amount` decimal(12,0) NOT NULL,
+  `transaction_content` text NOT NULL,
+  `raw_payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`raw_payload`)),
+  `status` enum('pending','success','failed') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_trans_reference` (`reference_number`),
+  KEY `idx_trans_order` (`order_id`),
+  CONSTRAINT `fk_trans_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `payment_transactions`
+--
+
+LOCK TABLES `payment_transactions` WRITE;
+/*!40000 ALTER TABLE `payment_transactions` DISABLE KEYS */;
+INSERT INTO `payment_transactions` VALUES
+(1,20,'Sepay','SEPAY_SIMULATE_123',6400000,'Thanh toan don hang NM-65958','{\"referenceNumber\":\"SEPAY_SIMULATE_123\",\"amountIn\":6400000,\"transactionContent\":\"Thanh toan don hang NM-65958\",\"gateway\":\"Sepay\",\"transactionDate\":\"2026-05-07 10:00:00\"}','success','2026-05-07 09:59:49'),
+(2,20,'Sepay','TEST_REF_123',100000,'Thanh toan don hang NM-65958','{\"referenceNumber\":\"TEST_REF_123\",\"amountIn\":100000,\"transactionContent\":\"Thanh toan don hang NM-65958\",\"gateway\":\"Sepay\",\"transactionDate\":\"2026-05-07 10:00:00\"}','failed','2026-05-07 10:01:34'),
+(3,22,'Sepay','PENDING_NM-91369',4000000,'Đang chờ thanh toán đơn NM-91369','{}','failed','2026-05-11 15:26:19'),
+(4,25,'Sepay','PENDING_NM-25459',11000000,'Đang chờ thanh toán đơn NM-25459','{}','failed','2026-05-11 15:48:22'),
+(5,26,'Sepay','PENDING_NM-91832',1500000,'Đang chờ thanh toán đơn NM-91832','{}','success','2026-05-11 15:49:34'),
+(6,27,'Sepay','PENDING_NM-45637',1500000,'Đang chờ thanh toán đơn NM-45637','{}','failed','2026-05-11 15:59:57'),
+(7,29,'Sepay','PENDING_NM-22389',11000000,'Đang chờ thanh toán đơn NM-22389','{}','success','2026-05-11 16:22:57'),
+(8,30,'Sepay','PENDING_NM-27979',2200000,'Đang chờ thanh toán đơn NM-27979','{}','failed','2026-05-11 16:23:19'),
+(9,32,'Sepay','PENDING_NM-21383',1500000,'Đang chờ thanh toán đơn NM-21383','{}','failed','2026-05-11 16:29:15'),
+(10,33,'Sepay','PENDING_NM-56409',2200000,'Đang chờ thanh toán đơn NM-56409','{}','failed','2026-05-11 16:32:15'),
+(11,34,'Sepay','PENDING_NM-31640',2200000,'Đang chờ thanh toán đơn NM-31640','{}','success','2026-05-11 16:32:43'),
+(12,35,'Sepay','PENDING_NM-95349',1500000,'Đang chờ thanh toán đơn NM-95349','{}','failed','2026-05-11 16:36:26');
+/*!40000 ALTER TABLE `payment_transactions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -430,38 +535,38 @@ CREATE TABLE `product_variants` (
 LOCK TABLES `product_variants` WRITE;
 /*!40000 ALTER TABLE `product_variants` DISABLE KEYS */;
 INSERT INTO `product_variants` VALUES
-(1,1,NULL,'Xám Đen','#2f2f2f','S',3),
-(2,1,NULL,'Xám Đen','#2f2f2f','M',5),
-(3,1,NULL,'Xám Đen','#2f2f2f','L',3),
+(1,1,NULL,'Xám Đen','#2f2f2f','S',0),
+(2,1,NULL,'Xám Đen','#2f2f2f','M',4),
+(3,1,NULL,'Xám Đen','#2f2f2f','L',2),
 (5,1,NULL,'Kem Cát','#c8b89a','S',2),
 (6,1,NULL,'Kem Cát','#c8b89a','M',3),
-(7,1,NULL,'Kem Cát','#c8b89a','L',2),
+(7,1,NULL,'Kem Cát','#c8b89a','L',1),
 (8,1,NULL,'Kem Cát','#c8b89a','XL',1),
-(9,2,NULL,'Đen Nhám','#1a1c1c','S',5),
-(10,2,NULL,'Đen Nhám','#1a1c1c','M',8),
-(11,2,NULL,'Đen Nhám','#1a1c1c','L',5),
+(9,2,NULL,'Đen Nhám','#1a1c1c','S',6),
+(10,2,NULL,'Đen Nhám','#1a1c1c','M',5),
+(11,2,NULL,'Đen Nhám','#1a1c1c','L',4),
 (12,2,NULL,'Đen Nhám','#1a1c1c','XL',4),
 (13,2,NULL,'Trắng Kem','#f5f0e8','S',3),
 (14,2,NULL,'Trắng Kem','#f5f0e8','M',5),
 (15,2,NULL,'Trắng Kem','#f5f0e8','L',4),
 (16,2,NULL,'Nâu Đất','#4a3728','S',2),
-(17,2,NULL,'Nâu Đất','#4a3728','M',3),
-(18,3,NULL,'Be Đất','#c8b89a','28',3),
-(19,3,NULL,'Be Đất','#c8b89a','30',6),
+(17,2,NULL,'Nâu Đất','#4a3728','M',2),
+(18,3,NULL,'Be Đất','#c8b89a','28',2),
+(19,3,NULL,'Be Đất','#c8b89a','30',5),
 (20,3,NULL,'Be Đất','#c8b89a','32',5),
 (21,3,NULL,'Be Đất','#c8b89a','34',3),
 (22,3,NULL,'Xám Than','#3d3d3d','28',2),
-(23,3,NULL,'Xám Than','#3d3d3d','30',4),
+(23,3,NULL,'Xám Than','#3d3d3d','30',3),
 (24,3,NULL,'Xám Than','#3d3d3d','32',3),
-(25,4,NULL,'Đen','#1a1c1c','39',1),
+(25,4,NULL,'Đen','#1a1c1c','39',0),
 (26,4,NULL,'Đen','#1a1c1c','40',3),
-(27,4,NULL,'Đen','#1a1c1c','41',2),
+(27,4,NULL,'Đen','#1a1c1c','41',0),
 (28,4,NULL,'Đen','#1a1c1c','42',1),
 (29,4,NULL,'Nâu','#4a3728','39',1),
 (30,4,NULL,'Nâu','#4a3728','40',2),
-(31,4,NULL,'Nâu','#4a3728','41',2),
+(31,4,NULL,'Nâu','#4a3728','41',1),
 (32,4,NULL,'Nâu','#4a3728','42',1),
-(33,5,NULL,'Anthracite','#3d3d3d','S',4),
+(33,5,NULL,'Anthracite','#3d3d3d','S',3),
 (34,5,NULL,'Anthracite','#3d3d3d','M',5),
 (35,5,NULL,'Anthracite','#3d3d3d','L',3),
 (36,5,NULL,'Đen','#1a1c1c','S',3),
@@ -469,8 +574,8 @@ INSERT INTO `product_variants` VALUES
 (38,5,NULL,'Đen','#1a1c1c','L',2),
 (39,5,NULL,'Nâu Mocha','#8b6f5e','S',2),
 (40,5,NULL,'Nâu Mocha','#8b6f5e','M',3),
-(41,6,NULL,'Đen','#1a1c1c','M',2),
-(42,6,NULL,'Đen','#1a1c1c','L',2),
+(41,6,NULL,'Đen','#1a1c1c','M',1),
+(42,6,NULL,'Đen','#1a1c1c','L',1),
 (43,6,NULL,'Đen','#1a1c1c','XL',1),
 (44,6,NULL,'Xám Đen','#2f2f2f','M',1),
 (45,6,NULL,'Xám Đen','#2f2f2f','L',1),
@@ -553,8 +658,8 @@ CREATE TABLE `promo_codes` (
 LOCK TABLES `promo_codes` WRITE;
 /*!40000 ALTER TABLE `promo_codes` DISABLE KEYS */;
 INSERT INTO `promo_codes` VALUES
-(1,'WELCOME10','percent',10.00,500000,NULL,0,NULL,1,'2026-04-27 06:29:51'),
-(2,'NMEN200K','fixed',200000.00,2000000,100,0,NULL,1,'2026-04-27 06:29:51'),
+(1,'WELCOME10','percent',10.00,500000,NULL,1,NULL,1,'2026-04-27 06:29:51'),
+(2,'NMEN200K','fixed',200000.00,2000000,100,1,NULL,1,'2026-04-27 06:29:51'),
 (3,'VIP20','percent',20.00,5000000,50,0,NULL,1,'2026-04-27 06:29:51');
 /*!40000 ALTER TABLE `promo_codes` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -677,6 +782,7 @@ CREATE TABLE `users` (
   `avatar_url` text DEFAULT NULL,
   `joined_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `status` enum('active','inactive') DEFAULT 'active',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -689,13 +795,13 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` VALUES
-(1,'Nguyễn Văn A','nguyenvana@example.com','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa','+84987654321','customer','Hạng Đen',2050,NULL,'2026-04-27 06:29:51','2026-04-28 09:19:22'),
-(2,'Trần Minh B','tranminhb@example.com','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa','+84912345678','customer','Hạng Bạc',450,NULL,'2026-04-27 06:29:51','2026-04-27 06:29:51'),
-(3,'Lê Hoàng C','lehoangg@example.com','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa','+84976543210','customer','Hạng Vàng',890,NULL,'2026-04-27 06:29:51','2026-04-27 06:29:51'),
-(4,'Phạm Đức D','phamduc@example.com','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa','+84901234567','customer','Hạng Đồng',50,NULL,'2026-04-27 06:29:51','2026-04-27 06:29:51'),
-(5,'Hoàng Quân E','hoangquan@example.com','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa','+84965432109','customer','Hạng Bạc',670,NULL,'2026-04-27 06:29:51','2026-04-27 06:29:51'),
-(6,'NMen Admin','admin@nmen.vn','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa',NULL,'admin','Hạng Đen',0,NULL,'2026-04-27 06:29:51','2026-04-27 06:29:51'),
-(7,'Lê Quang Ngọc An','lequangngocan@gmail.com','$2a$10$OQAUCh.TK3Hju.ZD5WYu/u1CJ8gaEKB9NJtsVPhc.M0XnfTi2hUf6',NULL,'customer','Hạng Đồng',0,NULL,'2026-04-28 09:28:46','2026-04-28 09:28:46');
+(1,'Nguyễn Văn A','nguyenvana@example.com','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa','0387210034','customer','Hạng Đen',2050,NULL,'2026-04-27 06:29:51','2026-05-05 08:27:44','active'),
+(2,'Trần Minh B','tranminhb@example.com','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa','+84912345678','customer','Hạng Bạc',450,NULL,'2026-04-27 06:29:51','2026-04-27 06:29:51','active'),
+(3,'Lê Hoàng C','lehoangg@example.com','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa','+84976543210','customer','Hạng Vàng',890,NULL,'2026-04-27 06:29:51','2026-04-27 06:29:51','active'),
+(4,'Phạm Đức D','phamduc@example.com','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa','+84901234567','customer','Hạng Đồng',50,NULL,'2026-04-27 06:29:51','2026-04-27 06:29:51','active'),
+(5,'Hoàng Quân E','hoangquan@example.com','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa','+84965432109','customer','Hạng Bạc',670,NULL,'2026-04-27 06:29:51','2026-04-27 06:29:51','active'),
+(6,'NMen Admin','admin@nmen.vn','$2a$10$0fnRdMwzt2H7o.oR.FsOCe5Cy0j/031BDnKsjEsdVeadZ5VUD/oRa',NULL,'admin','Hạng Đen',0,NULL,'2026-04-27 06:29:51','2026-04-27 06:29:51','active'),
+(7,'Lê Quang Ngọc An','lequangngocan@gmail.com','$2a$10$OQAUCh.TK3Hju.ZD5WYu/u1CJ8gaEKB9NJtsVPhc.M0XnfTi2hUf6','0123456789','customer','Hạng Đồng',5310,NULL,'2026-04-28 09:28:46','2026-05-11 16:36:26','active');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -716,7 +822,7 @@ CREATE TABLE `wishlists` (
   KEY `fk_wl_product` (`product_id`),
   CONSTRAINT `fk_wl_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_wl_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -729,7 +835,9 @@ INSERT INTO `wishlists` VALUES
 (1,1,3,'2026-04-27 06:29:51'),
 (2,1,4,'2026-04-27 06:29:51'),
 (3,2,1,'2026-04-27 06:29:51'),
-(4,3,6,'2026-04-27 06:29:51');
+(4,3,6,'2026-04-27 06:29:51'),
+(5,7,1,'2026-05-13 04:21:41'),
+(6,7,3,'2026-05-13 04:21:48');
 /*!40000 ALTER TABLE `wishlists` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -742,4 +850,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-28 17:21:06
+-- Dump completed on 2026-05-13 11:55:16

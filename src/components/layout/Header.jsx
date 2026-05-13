@@ -114,7 +114,7 @@ export default function Header({ settings = {} }) {
     const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     fetch(`${BASE}/api/categories`)
       .then((r) => r.json())
-      .then((data) => setCategoryTree(Array.isArray(data) ? data.filter((c) => c.status === "active") : []))
+      .then((data) => setCategoryTree(Array.isArray(data) ? data.filter((c) => c.status === "active").sort((a, b) => (a.position ?? 0) - (b.position ?? 0)) : []))
       .catch(() => {});
   }, []);
 

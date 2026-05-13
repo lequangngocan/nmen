@@ -5,11 +5,13 @@ import StatCard from "@/components/admin/StatCard";
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 async function getAdminToken() {
-  // Dashboard là server component — dùng admin hardcode để fetch stats
+  // Dashboard là server component — đọc credentials từ biến môi trường phía server
+  const adminEmail    = process.env.ADMIN_EMAIL    || 'admin@nmen.vn';
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
   const res = await fetch(`${API}/api/auth/admin-login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "admin@nmen.vn", password: "admin123" }),
+    body: JSON.stringify({ email: adminEmail, password: adminPassword }),
     cache: "no-store",
   });
   const data = await res.json();

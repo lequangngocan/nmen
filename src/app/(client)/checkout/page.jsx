@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Lock, Loader2, MapPin } from "lucide-react";
+import { Lock, Loader2, MapPin, Tag, CheckCircle, XCircle } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { apiGet, apiPost } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +20,10 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [note, setNote] = useState("");
   const [promoCode, setPromoCode] = useState("");
+
+  // ─── Promo state ────────────────────────────────────────────────
+  const [promoResult, setPromoResult] = useState(null);  // { valid, discount_amount, message }
+  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
 
   // ─── Địa chỉ đã lưu ────────────────────────────────────────────
   const [savedAddresses, setSavedAddresses] = useState([]);
@@ -110,6 +114,24 @@ export default function CheckoutPage() {
     }
   };
 
+  // ─── Áp dụng mã giảm giá ────────────────────────────────────────
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) return;
+    setIsApplyingPromo(true);
+    setPromoResult(null);
+    try {
+      const data = await apiPost('/api/promo/validate', {
+        code: promoCode.trim(),
+        subtotal,
+      });
+      setPromoResult(data);
+    } catch (err) {
+      setPromoResult({ valid: false, message: err.message || 'Không thể kiểm tra mã giảm giá' });
+    } finally {
+      setIsApplyingPromo(false);
+    }
+  };
+
   // ─── Submit ────────────────────────────────────────────────────
   const handleConfirm = async (e) => {
     e.preventDefault();
@@ -133,7 +155,8 @@ export default function CheckoutPage() {
         province_id:   Number(shippingForm.provinceId),
         commune_id:    shippingForm.communeId ? Number(shippingForm.communeId) : null,
         payment_method: selectedPayment,
-        promo_code:    promoCode || undefined,
+        // chỉ gửi promo_code nếu đã validate thành công
+        promo_code:    (promoResult?.valid ? promoCode.trim() : undefined),
         note:          note || undefined,
         items: items.map((item) => ({
           product_id: item.product_id,
@@ -147,7 +170,28 @@ export default function CheckoutPage() {
 
       const res = await apiPost("/api/orders", payload);
       clearCart();
-      router.push(`/order/success?order=${res.order_number}&total=${res.total_amount}&phone=${encodeURIComponent(shippingForm.phone)}`);
+      
+      if (res.sepay_checkout) {
+        // Handle Sepay Checkout Redirect
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = res.sepay_checkout.action;
+        
+        for (const key in res.sepay_checkout.params) {
+          if (res.sepay_checkout.params.hasOwnProperty(key)) {
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = key;
+            hiddenField.value = res.sepay_checkout.params[key];
+            form.appendChild(hiddenField);
+          }
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+      } else {
+        router.push(`/order/success?order=${res.order_number}&total=${res.total_amount}&phone=${encodeURIComponent(shippingForm.phone)}&method=${selectedPayment.toLowerCase()}`);
+      }
     } catch (error) {
       console.error(error);
       alert(error.message || "Có lỗi xảy ra khi đặt hàng");
@@ -173,7 +217,7 @@ export default function CheckoutPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-        <div className="lg:col-span-7 space-y-16 lg:space-y-24">
+        <div className="lg:col-span-7 space-y-8 lg:space-y-12">
 
           {/* ── SECTION 01: Địa chỉ ── */}
           <section>
@@ -296,7 +340,7 @@ export default function CheckoutPage() {
           </section>
 
           {/* ── SECTION 02: Thanh toán ── */}
-          <section>
+          <section className="mb-8">
             <div className="flex items-center space-x-4 mb-10">
               <span className="font-headline text-2xl font-black text-black">02</span>
               <h2 className="font-headline text-xl lg:text-2xl font-bold uppercase tracking-tight text-black">Thông Tin Thanh Toán</h2>
@@ -317,8 +361,9 @@ export default function CheckoutPage() {
               </div>
             )}
             {selectedPayment === "Sepay" && (
-              <div className="py-8 px-4 text-center border border-dashed border-stone-300">
-                <p className="font-body text-sm text-stone-500">Tích hợp mã QR Sepay — Ra mắt sớm. (Chức năng này đang bảo trì)</p>
+              <div className="py-8 px-4 text-center border border-dashed border-stone-300 bg-stone-50">
+                <p className="font-body text-sm text-black font-semibold mb-2">Thanh toán qua cổng mã QR Sepay</p>
+                <p className="font-body text-xs text-stone-500">Hệ thống sẽ chuyển hướng bạn đến trang thanh toán bảo mật sau khi xác nhận đặt hàng.</p>
               </div>
             )}
           </section>
@@ -375,11 +420,34 @@ export default function CheckoutPage() {
 
             <div className="mb-8">
               <div className="flex gap-3">
-                <input type="text" value={promoCode} onChange={(e) => setPromoCode(e.target.value)}
+                <input
+                  type="text"
+                  value={promoCode}
+                  onChange={(e) => { setPromoCode(e.target.value); setPromoResult(null); }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
                   placeholder="Mã Giảm Giá"
                   className="flex-1 bg-transparent border-b border-stone-400 focus:border-black px-0 py-2 transition-colors focus:ring-0 outline-none font-label text-xs uppercase placeholder:text-stone-400 text-black" />
-                <button className="font-label text-[10px] uppercase font-bold hover:text-stone-500 transition-colors text-black">Áp Dụng</button>
+                <button
+                  onClick={handleApplyPromo}
+                  disabled={isApplyingPromo || !promoCode.trim()}
+                  className="font-label text-[10px] uppercase font-bold hover:text-stone-500 transition-colors text-black disabled:opacity-40 flex items-center gap-1">
+                  {isApplyingPromo ? <Loader2 size={12} className="animate-spin" /> : null}
+                  Áp Dụng
+                </button>
               </div>
+              {/* Thông báo kết quả promo */}
+              {promoResult && (
+                <div className={`mt-2 flex items-center gap-2 text-[11px] font-label ${
+                  promoResult.valid ? 'text-emerald-600' : 'text-red-500'
+                }`}>
+                  {promoResult.valid
+                    ? <CheckCircle size={12} />
+                    : <XCircle size={12} />}
+                  {promoResult.valid
+                    ? `Giảm ${promoResult.discount_amount?.toLocaleString('vi-VN')} đ`
+                    : promoResult.message}
+                </div>
+              )}
             </div>
 
             <div className="space-y-4 pt-8 border-t border-stone-300">
@@ -387,13 +455,20 @@ export default function CheckoutPage() {
                 <span>Cộng gộp</span>
                 <span className="text-black">{subtotal.toLocaleString("vi-VN")} đ</span>
               </div>
+              {/* BUG-05 fix: Hiển thị dòng giảm giá nếu promo hợp lệ */}
+              {promoResult?.valid && promoResult.discount_amount > 0 && (
+                <div className="flex justify-between font-label text-[10px] uppercase tracking-widest">
+                  <span className="flex items-center gap-1 text-emerald-600"><Tag size={10} /> Giảm giá</span>
+                  <span className="text-emerald-600 font-bold">-{promoResult.discount_amount.toLocaleString("vi-VN")} đ</span>
+                </div>
+              )}
               <div className="flex justify-between font-label text-[10px] uppercase tracking-widest text-stone-500">
                 <span>Giao hàng</span>
                 <span className="font-bold text-black">Miễn phí</span>
               </div>
               <div className="flex justify-between font-headline text-xl font-black uppercase pt-4 border-t border-stone-300 text-black">
                 <span>Tổng Cộng</span>
-                <span>{subtotal.toLocaleString("vi-VN")} đ</span>
+                <span>{(subtotal - (promoResult?.valid ? (promoResult.discount_amount || 0) : 0)).toLocaleString("vi-VN")} đ</span>
               </div>
             </div>
 

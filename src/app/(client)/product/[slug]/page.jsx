@@ -2,6 +2,8 @@
 
 import { useState, useEffect, use } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Heart, Star, ChevronDown, Loader2, ImageOff } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -12,6 +14,7 @@ import { useWishlist } from "@/context/WishlistContext";
 export default function ProductDetailPage(props) {
   const params = use(props.params);
   const { slug } = params;
+  const router = useRouter();
 
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
@@ -63,6 +66,7 @@ export default function ProductDetailPage(props) {
   }, [slug]);
 
   const handleAddToCart = () => {
+    if (!inStock) return;
     if (!selectedSize || !selectedColor) {
       alert("Vui lòng chọn Màu sắc và Kích thước!");
       return;
@@ -78,7 +82,19 @@ export default function ProductDetailPage(props) {
       selectedColor,
       variant?.id || null
     );
-    alert("Đã thêm vào giỏ hàng!");
+    return true;
+  };
+
+  const handleAddToCartClick = () => {
+    if (handleAddToCart()) {
+      alert("Đã thêm vào giỏ hàng!");
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (handleAddToCart()) {
+      router.push("/checkout");
+    }
   };
 
   const handleAddToWishlist = async () => {
@@ -213,7 +229,10 @@ export default function ProductDetailPage(props) {
                     <span className="font-label text-[10px] uppercase tracking-widest text-stone-500">
                       Chọn Size
                     </span>
-                    <button className="font-label text-[10px] uppercase tracking-widest underline underline-offset-4 text-stone-700 hover:text-black cursor-pointer">
+                    <button 
+                      onClick={() => alert('Tính năng đang phát triển')}
+                      className="font-label text-[10px] uppercase tracking-widest underline underline-offset-4 text-stone-700 hover:text-black cursor-pointer"
+                    >
                       Hướng dẫn chọn Size
                     </button>
                   </div>
@@ -237,13 +256,22 @@ export default function ProductDetailPage(props) {
             </div>
 
             <div className="space-y-4">
-              <button
-                onClick={handleAddToCart}
-                disabled={!inStock}
-                className="w-full py-6 bg-black text-white font-headline font-bold uppercase tracking-widest hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              >
-                {inStock ? "Thêm vào Giỏ Hàng" : "Tạm hết hàng"}
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={handleAddToCartClick}
+                  disabled={!inStock}
+                  className="flex-1 py-6 bg-transparent border-2 border-black text-black font-headline font-bold uppercase tracking-widest hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {inStock ? "Thêm vào Giỏ Hàng" : "Tạm hết hàng"}
+                </button>
+                <button
+                  onClick={handleBuyNow}
+                  disabled={!inStock}
+                  className="flex-1 py-6 bg-black border-2 border-black text-white font-headline font-bold uppercase tracking-widest hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  Mua Ngay
+                </button>
+              </div>
               <button 
                 onClick={handleAddToWishlist}
                 className="w-full py-4 border border-stone-200 font-label text-[10px] uppercase tracking-widest hover:bg-stone-50 flex items-center justify-center gap-2 transition-all cursor-pointer"
@@ -287,9 +315,9 @@ export default function ProductDetailPage(props) {
               Gợi ý phối đồ
             </h2>
             <div className="h-px grow mx-12 hidden md:block bg-stone-300"></div>
-            <a className="font-label text-xs uppercase tracking-widest border-b border-black text-black" href="/all">
+            <Link className="font-label text-xs uppercase tracking-widest border-b border-black text-black" href="/all">
               Xem tất cả
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -314,7 +342,10 @@ export default function ProductDetailPage(props) {
           </div>
 
           <div className="mt-20 flex justify-center text-black">
-            <button className="px-12 py-4 border border-black font-headline font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all">
+            <button 
+              onClick={() => alert('Tính năng đang phát triển')}
+              className="px-12 py-4 border border-black font-headline font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all cursor-pointer"
+            >
               Viết Đánh Giá
             </button>
           </div>

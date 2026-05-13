@@ -312,7 +312,7 @@ export default function OrderDetailsPage() {
               </div>
               {Number(order.discount_amount) > 0 && (
                 <div className="flex justify-between font-label text-[10px] uppercase tracking-widest text-stone-300">
-                  <span>Giảm giá</span>
+                  <span>Giảm giá {order.promo_code ? `(${order.promo_code})` : ""}</span>
                   <span className="text-emerald-400">-{Number(order.discount_amount).toLocaleString("vi-VN")} đ</span>
                 </div>
               )}

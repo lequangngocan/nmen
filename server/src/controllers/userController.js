@@ -4,7 +4,7 @@ const pool = require('../db');
 const getUsers = async (req, res) => {
   try {
     const [users] = await pool.query(
-      `SELECT u.id, u.full_name, u.email, u.phone, u.role, u.tier, u.points, u.avatar_url, u.joined_at,
+      `SELECT u.id, u.full_name, u.email, u.phone, u.role, u.status, u.avatar_url, u.joined_at,
               COUNT(DISTINCT o.id)  AS order_count,
               COALESCE(SUM(o.total_amount), 0) AS total_spent,
               COUNT(DISTINCT a.id)  AS address_count,
@@ -32,7 +32,7 @@ const getUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT id, full_name, email, phone, role, tier, points, avatar_url, joined_at
+      `SELECT id, full_name, email, phone, role, status, avatar_url, joined_at
        FROM users WHERE id = ?`,
       [req.params.id]
     );
@@ -65,4 +65,38 @@ const getUserById = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, getUserById };
+// PUT /api/users/:id — cập nhật user (admin)
+const updateUser = async (req, res) => {
+  try {
+    const { full_name, phone, status } = req.body;
+    
+    if (full_name !== undefined && full_name.trim() === '') {
+      return res.status(400).json({ message: 'Họ tên không được để trống' });
+    }
+
+    const fields = [];
+    const params = [];
+
+    if (full_name !== undefined) { fields.push('full_name = ?'); params.push(full_name.trim()); }
+    if (phone !== undefined) { fields.push('phone = ?'); params.push(phone || null); }
+    if (status !== undefined) { fields.push('status = ?'); params.push(status); }
+
+    if (fields.length === 0) {
+      return res.status(400).json({ message: 'Không có thông tin nào để cập nhật' });
+    }
+
+    params.push(req.params.id);
+    const [result] = await pool.query(`UPDATE users SET ${fields.join(', ')} WHERE id = ?`, params);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+    }
+
+    res.json({ message: 'Cập nhật thành công' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
+};
+
+module.exports = { getUsers, getUserById, updateUser };

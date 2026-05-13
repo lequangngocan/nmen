@@ -16,10 +16,11 @@ const settingRoutes  = require('./routes/settings');
 const pageRoutes     = require('./routes/pages');
 const locationRoutes = require('./routes/locations');
 const addressRoutes  = require('./routes/addresses');
+const sepayRoutes    = require('./routes/sepay');
 
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:3000' }));
 app.use(express.json());
 
 // phục vụ ảnh đã upload
@@ -38,6 +39,7 @@ app.use('/api/settings', settingRoutes);
 app.use('/api/pages', pageRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/addresses', addressRoutes);
+app.use('/api/sepay', sepayRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'NMen API đang chạy' });

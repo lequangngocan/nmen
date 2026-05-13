@@ -13,6 +13,7 @@ export function CartProvider({ children }) {
     try {
       const stored = localStorage.getItem("nmen_cart");
       if (stored) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setItems(JSON.parse(stored));
       }
     } catch (e) {
@@ -40,7 +41,8 @@ export function CartProvider({ children }) {
 
       if (existingIndex >= 0) {
         const newItems = [...prev];
-        newItems[existingIndex].quantity += quantity;
+        const maxQty = newItems[existingIndex].stock ?? 999;
+        newItems[existingIndex].quantity = Math.min(newItems[existingIndex].quantity + quantity, maxQty);
         return newItems;
       }
 
@@ -65,6 +67,7 @@ export function CartProvider({ children }) {
           color,
           color_name: product.selectedColorName || null,
           quantity,
+          stock: product.selectedStock ?? 999,
         },
       ];
     });
@@ -77,9 +80,11 @@ export function CartProvider({ children }) {
   const updateQuantity = (cartItemId, newQuantity) => {
     if (newQuantity < 1) return;
     setItems((prev) =>
-      prev.map((item) =>
-        item.id === cartItemId ? { ...item, quantity: newQuantity } : item
-      )
+      prev.map((item) => {
+        if (item.id !== cartItemId) return item;
+        const maxQty = item.stock ?? 999;
+        return { ...item, quantity: Math.min(newQuantity, maxQty) };
+      })
     );
   };
 

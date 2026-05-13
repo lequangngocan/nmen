@@ -4,16 +4,21 @@ const { auth } = require('../middleware/auth');
 const authOptional = require('../middleware/authOptional');
 const adminOnly = require('../middleware/adminOnly');
 const {
-  createOrder, getMyOrders, getOrderById, getAllOrders, updateOrderStatus, lookupOrder, cancelOrderByLookup,
+  createOrder, getMyOrders, getOrderById, getAllOrders,
+  updateOrderStatus, updateOrderInfo, updateOrderItems,
+  lookupOrder, cancelOrderByLookup, verifySepayFrontend
 } = require('../controllers/orderController');
 
 // /my và /lookup phải đặt trước /:id để không bị nhầm route
 router.get('/my', auth, getMyOrders);
-router.get('/lookup', lookupOrder);             // công khai — tra cứu cho khách vãng lai
-router.post('/cancel', cancelOrderByLookup);    // công khai — khách hủy đơn pending
+router.get('/lookup', lookupOrder);
+router.post('/cancel', cancelOrderByLookup);
+router.post('/verify-sepay', verifySepayFrontend);
 router.get('/', auth, adminOnly, getAllOrders);
-router.post('/', authOptional, createOrder);   // guest vẫn đặt được
+router.post('/', authOptional, createOrder);
 router.get('/:id', auth, getOrderById);
-router.patch('/:id/status', auth, adminOnly, updateOrderStatus);
+router.patch('/:id/status',         auth, adminOnly, updateOrderStatus);
+router.put('/:id/info',             auth, adminOnly, updateOrderInfo);
+router.put('/:id/items', auth, adminOnly, updateOrderItems);
 
 module.exports = router;

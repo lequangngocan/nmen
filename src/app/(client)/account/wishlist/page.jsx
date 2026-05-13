@@ -68,7 +68,7 @@ export default function WishlistNestedPage() {
                 <button 
                   onClick={() => removeFromWishlist(item.product_id)}
                   className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-2 text-black hover:bg-black hover:text-white transition-all z-10"
-                  title="Remove from Wishlist"
+                  title="Xóa khỏi danh sách yêu thích"
                 >
                   <X size={16} />
                 </button>
