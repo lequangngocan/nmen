@@ -196,16 +196,16 @@ Hệ thống được thiết kế phân quyền rõ rệt thành hai phân hệ
 
 #### Phân hệ khách hàng:
 ```mermaid
-usecaseDiagram
-    actor "Khách hàng" as customer
+graph LR
+    customer((👤 Khách hàng))
     
-    usecase "Đăng ký / Đăng nhập" as uc_auth
-    usecase "Duyệt sản phẩm & Bộ lọc" as uc_browse
-    usecase "Tìm kiếm sản phẩm" as uc_search
-    usecase "Quản lý Giỏ hàng" as uc_cart
-    usecase "Đặt hàng & Thanh toán QR" as uc_checkout
-    usecase "Tra cứu đơn hàng vãng lai" as uc_lookup
-    usecase "Xem lịch sử tích điểm" as uc_loyalty
+    uc_auth(Đăng ký / Đăng nhập)
+    uc_browse(Duyệt sản phẩm & Bộ lọc)
+    uc_search(Tìm kiếm sản phẩm)
+    uc_cart(Quản lý Giỏ hàng)
+    uc_checkout(Đặt hàng & Thanh toán QR)
+    uc_lookup(Tra cứu đơn hàng vãng lai)
+    uc_loyalty(Xem lịch sử tích điểm)
     
     customer --> uc_auth
     customer --> uc_browse
@@ -218,15 +218,15 @@ usecaseDiagram
 
 #### Phân hệ quản trị (Admin):
 ```mermaid
-usecaseDiagram
-    actor "Admin" as admin
+graph LR
+    admin((👤 Admin / Quản trị))
     
-    usecase "Xem biểu đồ thống kê" as uc_dashboard
-    usecase "Quản lý Sản phẩm & Biến thể" as uc_manage_products
-    usecase "Quản lý Đơn hàng & Cập nhật trạng thái" as uc_manage_orders
-    usecase "Quản lý Mã giảm giá" as uc_manage_promos
-    usecase "Cấu hình Website" as uc_manage_settings
-    usecase "Quản lý Người dùng & Hạng thành viên" as uc_manage_users
+    uc_dashboard(Xem biểu đồ thống kê)
+    uc_manage_products(Quản lý Sản phẩm & Biến thể)
+    uc_manage_orders(Quản lý Đơn hàng & Cập nhật trạng thái)
+    uc_manage_promos(Quản lý Mã giảm giá)
+    uc_manage_settings(Cấu hình Website)
+    uc_manage_users(Quản lý Người dùng & Hạng thành viên)
     
     admin --> uc_dashboard
     admin --> uc_manage_products
