@@ -803,14 +803,14 @@ classDiagram
         +validate()
     }
 
-    User "1" --o{ Order : "đặt"
-    Category "1" --o{ Product : "chứa"
-    Product "1" --o{ ProductVariant : "có"
-    Product "1" --o{ ProductImage : "có"
-    Order "1" --o{ OrderItem : "gồm"
-    ProductVariant "1" --o{ OrderItem : "bán"
-    Order "1" --o{ PaymentTransaction : "thanh_toán"
-    PromoCode "0..1" --o{ Order : "áp_dụng"
+    User "1" o-- "*" Order : dat
+    Category "1" o-- "*" Product : chua
+    Product "1" o-- "*" ProductVariant : co
+    Product "1" o-- "*" ProductImage : co
+    Order "1" o-- "*" OrderItem : gom
+    ProductVariant "1" o-- "*" OrderItem : ban
+    Order "1" o-- "*" PaymentTransaction : thanh_toan
+    PromoCode "0..1" o-- "*" Order : ap_dung
 ```
 
 ---
