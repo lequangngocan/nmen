@@ -226,17 +226,45 @@ const updateProduct = async (req, res) => {
       }
       fields.push('sku = ?'); params.push(sku);
     }
+    // Kiểm tra tính hợp lệ của price và sale_price sau khi cập nhật
+    let nextPrice = price !== undefined ? price : undefined;
+    let nextSalePrice = sale_price !== undefined ? sale_price : undefined;
+
+    if (nextPrice !== undefined && (isNaN(nextPrice) || Number(nextPrice) < 0)) {
+      return res.status(400).json({ message: 'Giá sản phẩm không hợp lệ' });
+    }
+    if (nextSalePrice !== undefined && nextSalePrice !== null && nextSalePrice !== '') {
+      if (isNaN(nextSalePrice) || Number(nextSalePrice) < 0) {
+        return res.status(400).json({ message: 'Giá khuyến mãi không hợp lệ' });
+      }
+    }
+
+    if (nextPrice !== undefined || (nextSalePrice !== undefined && nextSalePrice !== null && nextSalePrice !== '')) {
+      let currentPrice = null;
+      let currentSalePrice = null;
+      if (nextPrice === undefined || nextSalePrice === undefined) {
+        const [cur] = await pool.query('SELECT price, sale_price FROM products WHERE id = ?', [id]);
+        if (cur.length > 0) {
+          currentPrice = Number(cur[0].price);
+          currentSalePrice = cur[0].sale_price !== null ? Number(cur[0].sale_price) : null;
+        }
+      }
+
+      const finalPrice = nextPrice !== undefined ? Number(nextPrice) : currentPrice;
+      const finalSalePrice = nextSalePrice !== undefined 
+        ? (nextSalePrice === null || nextSalePrice === '' ? null : Number(nextSalePrice)) 
+        : currentSalePrice;
+
+      if (finalSalePrice !== null && finalPrice !== null && finalSalePrice >= finalPrice) {
+        return res.status(400).json({ message: 'Giá khuyến mãi phải nhỏ hơn giá gốc' });
+      }
+    }
+
     if (price !== undefined) {
-      if (isNaN(price) || Number(price) < 0) return res.status(400).json({ message: 'Giá sản phẩm không hợp lệ' });
       fields.push('price = ?'); params.push(price);
     }
     if (sale_price !== undefined) {
       if (sale_price !== null && sale_price !== '') {
-        if (isNaN(sale_price) || Number(sale_price) < 0) return res.status(400).json({ message: 'Giá khuyến mãi không hợp lệ' });
-        // chỉ kiểm tra khi cùng cập nhật giá gốc
-        if (price !== undefined && Number(sale_price) >= Number(price)) {
-          return res.status(400).json({ message: 'Giá khuyến mãi phải nhỏ hơn giá gốc' });
-        }
         fields.push('sale_price = ?'); params.push(sale_price);
       } else {
         fields.push('sale_price = ?'); params.push(null);

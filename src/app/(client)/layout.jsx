@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { fetchSiteSettings } from "@/lib/settings";
@@ -14,7 +15,9 @@ export default async function ClientLayout({ children }) {
       <WishlistProvider>
         <CartProvider>
           <div className="font-body bg-surface text-on-surface flex flex-col min-h-screen selection:bg-black selection:text-white">
-          <Header settings={settings} />
+          <Suspense fallback={<div className="h-[76px] md:h-[84px] bg-stone-50 border-b border-stone-200/50" />}>
+            <Header settings={settings} />
+          </Suspense>
           <main className="grow pt-[76px] md:pt-[84px] bg-surface">
             {children}
           </main>
@@ -25,3 +28,4 @@ export default async function ClientLayout({ children }) {
     </AuthProvider>
   );
 }
+
